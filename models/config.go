@@ -14,17 +14,17 @@ var (
 )
 
 type Config struct {
-	Aggregator struct {
-		Host string
-	}
-	Buildbot struct {
-		WebHook string
-	}
 	Cite struct {
 		Host                string
 		ListenPort          string
 		RCRetentionDuration string
 		Version             string
+	}
+	Aggregator struct {
+		Host string
+	}
+	Buildbot struct {
+		WebHook string
 	}
 	ElasticSearch struct {
 		Host       string
@@ -62,6 +62,11 @@ type Config struct {
 	}
 	Notification struct {
 		WatchcenterAPI string
+		Slack          struct {
+			ClientID     string
+			ClientSecret string
+			RedirectURI  string
+		}
 	}
 }
 

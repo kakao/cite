@@ -1,4 +1,4 @@
 = content main
-  h3 Hello World!!!
-  h4 aa: {{.aa}}
-  h4 bb: {{.bb}}
+  a href="https://slack.com/oauth/authorize?scope=incoming-webhook&client_id={{$.conf.Notification.Slack.ClientID}}&redirect_uri={{$.conf.Cite.Host}}{{$.conf.Cite.ListenPort}}{{$.conf.Notification.Slack.RedirectURI}}"
+    img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"
+  h4 slack client id: {{$.conf.Notification.Slack.ClientID}}
