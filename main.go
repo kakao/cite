@@ -127,8 +127,8 @@ func main() {
 	}
 
 	// start server
-	std := standard.New(models.Conf.Cite.ListenAddr)
-	fmt.Printf("server started. listen address: %v\n", models.Conf.Cite.ListenAddr)
+	std := standard.New(models.Conf.Cite.ListenPort)
+	fmt.Printf("server started. listen address: %v\n", models.Conf.Cite.ListenPort)
 	if models.Conf.Cite.Version == "DEV" {
 		e.Run(std)
 	} else {

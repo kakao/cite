@@ -21,8 +21,8 @@ type Config struct {
 		WebHook string
 	}
 	Cite struct {
-		GithubWebhook       string
-		ListenAddr          string
+		Host                string
+		ListenPort          string
 		RCRetentionDuration string
 		Version             string
 	}
@@ -43,6 +43,7 @@ type Config struct {
 		OAuthTokenURL string
 		Scope         string
 		Username      string
+		WebhookURI    string
 	}
 	Grafana struct {
 		Host string

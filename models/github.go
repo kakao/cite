@@ -264,7 +264,7 @@ func (this *GitHub) UpsertHook(owner, repo string) error {
 			Name:   github.String("web"),
 			Events: []string{"status"},
 			Config: map[string]interface{}{
-				"url":          github.String(Conf.Cite.GithubWebhook),
+				"url":          github.String(Conf.Cite.Host + Conf.Cite.ListenPort + Conf.GitHub.WebhookURI),
 				"content_type": github.String("json"),
 			},
 		},

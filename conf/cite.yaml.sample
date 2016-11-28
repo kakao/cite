@@ -1,14 +1,14 @@
+Cite:
+  Host: "http://[cite domain]"
+  ListenPort: ":8080"
+  RCRetentionDuration: "1h"
+  Version: "DEV"
+  
 Aggregator:
   Host: "[fluentd aggregator domain]"
 
 Buildbot:
   Webhook: "[buildboot change_hook url]"
-
-Cite:
-  GithubWebhook: "http://[cite domain]/v1/github"
-  ListenAddr: ":8080"
-  RCRetentionDuration: "1h"
-  Version: "DEV"
 
 LoadBalancer:
   Driver: netscaler
@@ -27,6 +27,7 @@ GitHub:
   OAuthTokenURL: "https://github.com/login/oauth/access_token"
   Scope: "repo,write:repo_hook"
   Username: "[collaborator userid]"
+  WebhookURI: "/v1/github"
 
 Grafana:
   Host: "http://[grafana url]"
@@ -45,3 +46,7 @@ Kubernetes:
 
 Notification:
   WatchcenterAPI: "http://[watchcenter url]"
+  Slack:
+    ClientID: "[slack client id]"
+    ClientSecret: "[slack client secret]"
+    RedirectURI: "/v1/slack"
