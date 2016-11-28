@@ -8,9 +8,9 @@ import (
 	"strconv"
 
 	"github.com/deckarep/golang-set"
+	"github.com/kakao/cite/models"
 	"github.com/labstack/echo"
 	"github.com/nlopes/slack"
-	"github.com/kakao/cite/models"
 )
 
 func GetSession(c echo.Context) error {
@@ -439,36 +439,20 @@ func GetWatchcenterGroupIDs(c echo.Context) error {
 		})
 }
 
-func GetSlackButton(c echo.Context) error {
-	return c.HTML(http.StatusOK, `
-<a href="https://slack.com/oauth/authorize?scope=incoming-webhook&client_id=109652373045.109653620949&redirect_uri=http://niko.dev.9rum.cc:8080/test/slack/authorize"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a>`)
-}
+func GetSlackSend(c echo.Context) error {
+	token := "xoxp-109652373045-108890033585-110291547335-ba5017e265c4ebf27611d80ccf7e4895"
+	api := slack.New(token)
 
-func GetSlackAuthorize(c echo.Context) error {
-	return c.HTML(http.StatusOK, `OK`)
-}
+	// channel, err := api.GetChannelInfo("#general")
+	// logger.Infof("err: %v", err)
 
-func GetSlackTeam(c echo.Context) error {
-	api := slack.New("YOUR_TOKEN_HERE")
-	// If you set debugging, it will log all requests to the console
-	// Useful when encountering issues
-	api.SetDebug(true)
-	groups, err := api.GetGroups(false)
-	if err != nil {
-		fmt.Printf("%s\n", err)
-		return err
-	}
-	for _, group := range groups {
-		fmt.Printf("ID: %s, Name: %s\n", group.ID, group.Name)
-	}
-	// team := "kakao-cite"
-	return fmt.Errorf("not implemented yet")
-}
+	// logger.Infof("channel: %v", channel)
+	// logger.Infof("channel id: %v", channel.ID)
+	params := slack.PostMessageParameters{}
+	channel, ts, err := api.PostMessage("C37K6B0LD", "hello, there! 한글 메시지다!!", params)
+	logger.Infof("err: %v", err)
+	logger.Infof("channel: %v", channel)
+	logger.Infof("timestamp: %v", ts)
 
-func GetSlackChannels(c echo.Context) error {
-	return fmt.Errorf("not implemented yet")
-}
-
-func GetSendSlack(c echo.Context) error {
 	return fmt.Errorf("not implemented yet")
 }

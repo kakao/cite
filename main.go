@@ -44,6 +44,7 @@ func main() {
 	api := e.Group("/v1")
 	{
 		api.POST("/github", controller.PostGithubCallback)
+		api.GET("/slack", controller.GetSlackCallback)
 		api.GET("/cite/service", controller.GetCiteService)
 		api.GET("/cite/gc", controller.GetGarbageCollection)
 	}
@@ -119,11 +120,7 @@ func main() {
 		test.GET("/session_set", controller.PostSession)
 		test.GET("/session_unset", controller.DeleteSession)
 		test.GET("/wc_groupid", controller.GetWatchcenterGroupIDs)
-		test.GET("/slack/button", controller.GetSlackButton)
-		test.GET("/slack/authorize", controller.GetSlackAuthorize)
-		test.GET("/slack/get_team", controller.GetSlackTeam)
-		test.GET("/slack/get_channels", controller.GetSlackChannels)
-		test.GET("/slack/send", controller.GetSendSlack)
+		test.GET("/slack/send", controller.GetSlackSend)
 	}
 
 	// start server
