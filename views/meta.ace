@@ -89,7 +89,7 @@
           label.col-sm-2.control-label Image Name
           .col-sm-10
             .form-inline
-              input#inputImageName.form-control style="width:80%" name=image_name placeholder="search docker image. ex) mysql, idock.daumkakao.io/mesosphere/marathon" value={{.createForm.ImageName}}
+              input#inputImageName.form-control style="width:80%" name=image_name placeholder="search docker image." value={{.createForm.ImageName}}
               button#imageSearchBtn.btn.btn-primary Search
 
         .form-group

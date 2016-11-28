@@ -89,7 +89,7 @@
               input#inputImageName.form-control name=image_name value={{.form.ImageName}}
               .input-group-btn
                 button#imageSearchBtn.btn.btn-primary Search
-            p.help-block search docker image. ex) mysql, idock.daumkakao.io/mesosphere/marathon
+            p.help-block search docker image. ex) mysql
 
         .form-group
           label.col-sm-2.control-label Image Tag
