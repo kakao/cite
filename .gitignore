@@ -5,3 +5,4 @@
 /*memprof
 /conf/*.yaml
 *.exe
+/deploy.sh

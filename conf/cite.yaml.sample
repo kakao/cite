@@ -7,6 +7,7 @@ Buildbot:
 Cite:
   GithubWebhook: "http://[cite domain]/v1/github"
   ListenAddr: ":8080"
+  RCRetentionDuration: "1h"
   Version: "DEV"
 
 LoadBalancer:

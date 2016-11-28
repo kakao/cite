@@ -16,9 +16,7 @@ nav.navbar.navbar-default
               option value="http://cite.c.9rum.cc" Busan
               option value="http://cite.d.9rum.cc" selected=selected Pangyo Dev
         li
-          a href="https://kakao.agit.in/g/300005513" target="_blank" <i class="fa fa-comment"></i> Agit
-        li
-          a href="https://github.daumkakao.com/pages/CTF/cite.github.io/" target="_blank" <i class="fa fa-book"></i> Document
+          a href="http://tech.kakao.com/cite.github.io/" target="_blank" <i class="fa fa-book"></i> Document
         {{if $.githubRepo}}
         li
           a href="{{$.conf.GitHub.Host}}/{{$.githubOrg}}/{{$.githubRepo}}" target="_blank" <i class="fa fa-github"></i> GitHub
