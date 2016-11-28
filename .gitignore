@@ -1,0 +1,7 @@
+/cite
+/lastupdate.tmp
+/swagger*
+/docs/docs.go
+/*memprof
+/conf/*.yaml
+*.exe

@@ -1,0 +1,8 @@
+= content main
+  h4 personal access token
+  code {{ .token }}
+
+  hr
+
+  h4 update access token for kubernetes-cli
+  code kubectl config set-credentials {{.userLogin}} --token={{.token}}

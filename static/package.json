@@ -1,0 +1,21 @@
+{
+  "name": "cite",
+  "description": "cite frontend dependency management",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kakao/cite.git"
+  },
+  "author": "Niko Bellic <niko.bellic@kakaocorp.com>",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "backbone": "^1.2.3",
+    "bootstrap": "^3.3.6",
+    "bootstrap-slider": "^9.2.0",
+    "bootstrap-tokenfield": "^0.12.0",
+    "bootswatch": "^3.3.6",
+    "font-awesome": "^4.5.0",
+    "jquery": "^2.2.0",
+    "jquery-chained": "^1.0.0",
+    "select2": "^4.0.1"
+  }
+}

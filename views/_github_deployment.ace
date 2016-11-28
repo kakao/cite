@@ -1,0 +1,21 @@
+{{range .deployments}}
+.panel.panel-default
+  .panel-body
+    ul.navbar-nav.list-inline
+      li
+        a href={{.Creator.HTMLURL}}
+          img src={{.Creator.AvatarURL}} width="36px"
+      li
+        strong {{.Description}}
+        br
+        small <a href="{{.Creator.HTMLURL}}">{{.Creator.Login}}</a> deployed at {{printTime .CreatedAt}}
+    ul.navbar-nav.list-inline.navbar-right
+      li
+        h4
+          a href="/deploy_log/{{$.githubOrg}}/{{$.githubRepo}}/{{.ID}}" Deploy Log
+      li
+        ul.list-unstyled
+          {{range githubDeploymentStatuses $.githubOrg $.githubRepo .ID}}
+          li <strong>{{if eq (.State|deref) "pending"}}started{{else}}{{.State}}{{end}}</strong> {{if .Description}}{{.Description}}{{end}} {{printTime .CreatedAt}}
+          {{end}}
+{{end}}

@@ -1,0 +1,5 @@
+= content main
+  div.jumbotron
+    h1 Logged Out
+    p Revoke <a href="http://cite.d.9rum.cc">CITE-DEV</a> from <a href="{{.github_host}}/settings/applications">GitHub Applications</a> to disable autologin. (hope you don't though.)
+    a.btn.btn-primary.btn-lg href=/ role=button go back

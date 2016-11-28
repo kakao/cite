@@ -1,0 +1,8 @@
+/.git
+/cite
+/lastupdate.tmp
+/swagger*
+
+*.exe
+*.test
+*.prof

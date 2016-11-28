@@ -1,0 +1,41 @@
+= content main
+  h3 Kubernetes Services on <a href=/namespaces/{{.userLogin|normalizeByHyphen}}>{{.userLogin|normalizeByHyphen}}</a>
+
+  {{range $repo, $svcs := .svcs | groupByRepoName}}
+  {{if $repo}}
+  ul.list-inline
+    li
+      strong {{$repo}}
+    li
+      a href={{$.conf.GitHub.Host}}/{{$.userLogin}}/{{$repo}}
+        i.fa.fa-github
+  ul.list-inline style="padding-left:30px"
+    {{range $svcs}}
+    li
+      a href="/namespaces/{{.Namespace}}/services/{{.Name}}"
+        {{index .Labels "branch"}}
+    {{else}}
+    h4.text-info ...no service yet...
+    {{end}}
+  {{end}}
+  {{end}}
+
+  h3 My GitHub Organizations
+  ul.list-inline
+    {{range .orgs}}
+    li style="padding-right:45px"
+      a href="/namespaces/{{.Login|normalizeByHyphen}}"
+        img src={{.AvatarURL}} style="width:25px; padding-right:5px; padding-bottom:5px" {{.Login}}
+    {{else}}
+    h4.text-info ...no organizations yet...
+    {{end}}
+
+  h3
+    a href=/namespaces All Kubernetes Namespaces
+  ul.list-inline
+    {{range .nss}}
+    li style="padding-right:45px"
+      a href="/namespaces/{{.Name}}" {{.Name}}
+    {{else}}
+    h4.text-info ...no namespaces yet...
+    {{end}}

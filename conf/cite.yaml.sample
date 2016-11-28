@@ -1,0 +1,46 @@
+Aggregator:
+  Host: "[fluentd aggregator domain]"
+
+Buildbot:
+  Webhook: "[buildboot change_hook url]"
+
+Cite:
+  GithubWebhook: "http://[cite domain]/v1/github"
+  ListenAddr: ":8080"
+  Version: "DEV"
+
+LoadBalancer:
+  Driver: netscaler
+  
+ElasticSearch:
+  Host: "http://[elasticsearch endpoint]"
+  KibanaHost: "http://[kibana endpoint]"
+
+GitHub:
+  AccessToken: "[github access token]"
+  API: "https://api.github.com"
+  ClientID: "[github client id]"
+  ClientSecret: "[github client secret]"
+  Host: "https://github.com"
+  OAuthAuthURL: "https://github.com/login/oauth/authorize"
+  OAuthTokenURL: "https://github.com/login/oauth/access_token"
+  Scope: "repo,write:repo_hook"
+  Username: "[collaborator userid]"
+
+Grafana:
+  Host: "http://[grafana url]"
+
+Kubernetes:
+  Master: "[kubernetes master url]"
+  MaxPods: 20
+  MinInitialDelay: 10
+  MaxInitialDelay: 600
+  PollInterval: 2
+  PollTimeout: 600
+  DefaultCPU: "250m"
+  DefaultMemory: "1Gi"
+  MaxCPU: "2000m"
+  MaxMemory: "8Gi"
+
+Notification:
+  WatchcenterAPI: "http://[watchcenter url]"

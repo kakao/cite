@@ -1,0 +1,19 @@
+= content main
+  table.table style="margin-bottom:0px;"
+    thead
+      tr
+        th ID
+        th Name
+        th Description
+    tbody
+      {{range listWatchcenterGroups .userLogin}}
+      tr
+        td
+          .radio style="margin:0px"
+            label
+              input type="radio" name="wcGroup" id="{{.Id}}" value={{.Id}} {{.Id}}
+        td
+          label for="{{.Id}}" style="font-weight:normal" {{.Name}}
+        td
+          label for="{{.Id}}" style="font-weight:normal" {{.Description}}
+      {{end}}

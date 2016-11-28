@@ -1,0 +1,79 @@
+= content header
+  link rel=stylesheet href=/static/node_modules/bootstrap-slider/dist/css/bootstrap-slider.min.css
+  script type="text/javascript" src="/static/node_modules/bootstrap-slider/dist/bootstrap-slider.min.js"
+
+= content main
+  h3 Edit Service
+
+  form.form-horizontal action=/namespaces/{{.form.Namespace}}/services/{{.form.Service}}/settings method=post
+    input type=hidden name=source value={{.form.Source}}
+    input type=hidden name=namespace value={{.form.Namespace}}
+    input type=hidden name=service value={{.form.Service}}
+
+    {{if eq .form.Source "github"}}
+    .form-group
+      label.col-sm-2.control-label for=inputGitHub
+        a href={{$.conf.GitHub.Host}} target=_blank GitHub
+      .col-sm-10
+        label.control-label style="border:0px"
+          a href={{$.conf.GitHub.Host}}/{{.form.GithubOrg}}/{{.form.GithubRepo}}/tree/{{.form.GitBranch}} {{$.conf.GitHub.Host}}/{{.form.GithubOrg}}/{{.form.GithubRepo}}/tree/{{.form.GitBranch}}
+        input type=hidden name=github_org value={{.form.GithubOrg}}
+        input type=hidden name=github_repo value={{.form.GithubRepo}}
+        input type=hidden name=git_branch value={{.form.GitBranch}}
+
+    input type=hidden name=container_port value={{.form.ContainerPort}}
+    input type=hidden name=http_port value={{.form.HTTPPort}}
+    input type=hidden name=tcp_port value={{.form.TCPPort}}
+
+    = include _meta_common .
+
+    .form-group
+      .col-sm-offset-2.col-sm-10
+        .checkbox
+          label
+            {{if .form.AutoDeploy}}
+            input name=auto_deploy type=checkbox checked=checked Auto Deploy
+            {{else}}
+            input name=auto_deploy type=checkbox Auto Deploy
+            {{end}}
+
+    = include _meta_envvar .
+
+    = include _meta_volume .
+
+    .form-group
+      .col-sm-offset-2.col-sm-10
+        button#githubSubmitBtn.btn.btn-primary type=submit Submit
+        span style="padding-right:10px"
+        button.btn.btn-default type=reset Reset
+        p.help-block press ReDeploy button to ensure new settings on running containers.
+
+    {{else if eq .form.Source "dockerimage"}}
+    .form-group
+      h1 TODO...
+
+    .form-group
+      label.col-sm-2.control-label Image Name
+      .col-sm-10
+        .form-inline
+          input#inputImageName.form-control style="width:80%" name=image_name placeholder="search docker image. ex) mysql, idock.daumkakao.io/mesosphere/marathon" value={{.form.ImageName}}
+          button#imageSearchBtn.btn.btn-primary Search
+
+    .form-group
+      label.col-sm-2.control-label Image Tag
+      .col-sm-10
+        select#inputImageTag.form-control name=image_tag
+          option value='' --- select image tag ---
+
+    = include _meta_common .
+
+    = include _meta_envvar .
+
+    = include _meta_volume .
+
+    .form-group
+      .col-sm-offset-2.col-sm-10
+        button#imageSubmitBtn.btn.btn-primary type=submit disabled=disabled Submit
+        span style="padding-right:10px"
+        button.btn.btn-default type=reset Reset
+    {{end}}

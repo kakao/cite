@@ -1,0 +1,5 @@
+.form-group
+  label.col-sm-2.control-label for=inputEnvironment Environment Variables
+  .col-sm-10
+    textarea.form-control name=environment rows=12
+      {{.form.Environment}}

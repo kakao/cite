@@ -1,0 +1,19 @@
+= doctype html
+html
+  head
+    title cite
+    meta http-equiv=Content-Type content="text/html; charset=utf-8"
+    link rel=stylesheet href=/static/node_modules/bootswatch/cosmo/bootstrap.min.css
+    link rel=stylesheet href=/static/node_modules/font-awesome/css/font-awesome.min.css
+    link rel=stylesheet href=/static/css/cite.css
+    link rel=icon type=image/png href=/static/image/favicon-32x32.png sizes=32x32
+    link rel=icon type=image/png href=/static/image/favicon-16x16.png sizes=16x16
+    script type="text/javascript" src="/static/node_modules/jquery/dist/jquery.min.js"
+    script type="text/javascript" src="/static/node_modules/bootstrap/dist/js/bootstrap.min.js"
+    script type="text/javascript" src="/static/js/cite.js"
+    = yield header
+  body
+    = include _header .
+    .container-fluid
+      = yield main
+    = yield script

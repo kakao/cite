@@ -1,0 +1,27 @@
+= content main
+  h3 All Namespaces
+
+  table.table
+    thead
+      tr
+        th Service
+        th Labels
+        th Status
+        th Age
+    tbody
+      {{range .nss}}
+      tr
+        td
+          a href="/namespaces/{{.Name}}" {{.Name}}
+        td
+          ul.list-unstyled
+            {{range $k,$v := .Labels}}
+            li {{printf "%s:%s" $k $v}}
+            {{end}}
+        td {{.Status.Phase}}
+        td {{printTime .CreationTimestamp}}
+      {{else}}
+      tr
+        td colspan=5 style="text-align:center"
+          h4.text-info ...no namespaces yet...
+      {{end}}

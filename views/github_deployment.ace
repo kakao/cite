@@ -1,0 +1,4 @@
+= content main
+  h3 GitHub Deployments on {{.githubOrg}} / {{.githubRepo}}
+
+  = include _github_deployment .

@@ -1,0 +1,6 @@
+= content main
+  h3
+    a href="{{$.conf.GitHub.Host}}/{{.githubOrg}}/{{.githubRepo}}/commits/{{.gitBranch}}" GitHub Commits
+    span style="padding-left:10px" on {{.githubOrg}} / {{.githubRepo}}
+
+  = include _github_commit .

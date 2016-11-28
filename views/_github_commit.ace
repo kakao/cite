@@ -1,0 +1,74 @@
+{{range .commits}}
+.panel.panel-default
+  .panel-body
+    ul.navbar-nav.list-inline
+      {{if .Author}}
+      li
+        a href={{.Author.HTMLURL}}
+          img src={{.Author.AvatarURL}} width="36px"
+      li
+        strong
+          a href={{.HTMLURL}} {{.Commit.Message}}
+        br
+        small <a href="{{.Author.HTMLURL}}">{{.Commit.Author.Name}}</a> authored at {{printTime .Commit.Author.Date}}
+        br
+        small {{.SHA}}
+      {{else}}
+      li
+        img src=//assets-cdn.github.com/images/gravatars/gravatar-user-420.png width="36px"
+      li
+        strong
+          a href={{.HTMLURL}} {{.Commit.Message}}
+        br
+        small {{.Commit.Author.Name}} authored at {{printTime .Commit.Author.Date}}
+        br
+        small {{.SHA}}
+      {{end}}
+
+    {{$statuses := githubStatuses $.githubOrg $.githubRepo .SHA}}
+
+    {{if gt (len $statuses) 0}}
+    {{$lastStatus := index $statuses 0}}
+    {{if eq ($lastStatus.State|deref) "success"}}
+    ul.navbar-nav.list-inline.navbar-right
+      {{if eq (.SHA|deref) $.sha}}
+      li style="width: 120px"
+        a.btn.btn-primary style="padding: 10px; width:100%" href=/namespaces/{{$.nsName}}/services/{{$.svcName}}/deploy/{{.SHA}}?imageName={{getImageName $lastStatus.Description}} ReDeploy
+      {{else}}
+      li style="width: 120px"
+        a.btn.btn-default style="padding: 10px; width:100%" href=/namespaces/{{$.nsName}}/services/{{$.svcName}}/deploy/{{.SHA}}?imageName={{getImageName $lastStatus.Description}} Deploy
+      {{end}}
+    {{else}}
+    ul.navbar-nav.list-inline.navbar-right
+      li style="width: 120px"
+        a.btn.btn-default style="padding: 10px; width:100%" href=/namespaces/{{$.nsName}}/services/{{$.svcName}}/build/{{.SHA}} ReBuild
+    {{end}}
+    {{else}}
+    ul.navbar-nav.list-inline.navbar-right
+      li style="width: 120px"
+        a.btn.btn-default style="padding: 10px; width:100%" href=/namespaces/{{$.nsName}}/services/{{$.svcName}}/build/{{.SHA}} Build
+    {{end}}
+
+    {{with $statuses}}
+    table.table
+      thead
+        tr
+          th colspan=4
+            h4 Builds
+        tr
+          th CreatedAt
+          th State
+          th Description
+          th TargetURL
+      tbody
+        {{range .}}
+        tr
+          td {{printTime .CreatedAt}}
+          td {{.State}}
+          td {{.Description}}
+          td
+            a href={{.TargetURL}} target="_blank"
+              {{.TargetURL}}
+        {{end}}
+    {{end}}
+{{end}}

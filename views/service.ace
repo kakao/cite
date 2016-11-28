@@ -1,0 +1,265 @@
+= content header
+  link rel=stylesheet href=/static/node_modules/select2/dist/css/select2.min.css
+
+= content main
+  h3 Metadata
+  .row
+    .col-md-6
+      dl.dl-horizontal
+        dt AutoDeploy
+        dd {{.meta.AutoDeploy}}
+        dt ContainerPort
+        dd {{.meta.ContainerPort}}
+        dt Replicas
+        dd {{.meta.Replicas}}
+        dt Watchcenter
+        dd {{.meta.Watchcenter}}
+    .col-md-6
+       dl
+         dt Environment Variables
+         dd
+           pre {{.meta.Environment}}
+
+  h3 Service
+  .row
+    .col-md-4
+      .panel.panel-primary
+        .panel-heading
+          h3.panel-title LoadBalancer
+        .panel-body
+          table.table style="table-layout:fixed"
+            tbody
+              tr
+                th Driver
+                td {{index .svc.Labels "loadbalancer"}}
+              {{if .rc}}
+              
+              {{$domain := getDomain .svc}}
+              {{if $domain}}
+              tr
+                th Domain
+                td style="word-wrap:break-word"
+                  a href="https://{{$domain}}" target=_blank {{$domain}}
+              tr
+                th VIP
+                td 
+                  ul.list-unstyled
+                    {{range $v := getVIP $domain}}
+                    li {{$v}}
+                    {{end}}
+              {{else}}
+              tr
+                th colspan=2 style="text-align: center"
+                  p.text-warning create in progress...
+              {{end}}
+              
+              {{else}}
+              tr
+                th colspan=2 style="text-align: center"
+                  p.text-warning Not Deployed Yet
+              {{end}}
+      .panel.panel-primary
+        .panel-heading
+          .pull-right
+            a href="/delete/svc/{{.svc.Namespace}}/{{.svc.Name}}" style="color:white;" onclick="return confirm('about to delete service {{.svc.Name}}. are you sure?')"
+              i.fa.fa-times
+          h3.panel-title Service
+        .panel-body
+          table.table style="table-layout:fixed"
+            tbody
+              tr
+                th style="width:30%" Name
+                td {{.svc.Name}}
+              tr
+                th Labels
+                td
+                  table.table.table-bordered style="table-layout:fixed; margin-bottom:0px"
+                    tbody
+                      {{range $k,$v := .svc.Labels}}
+                      tr
+                        th {{$k}}
+                        td style="word-wrap:break-word;" {{$v}}
+                      {{end}}
+              tr
+                th Selectors
+                td
+                  table.table.table-bordered style="table-layout:fixed; margin-bottom:0px"
+                    tbody
+                      {{range $k,$v := .svc.Spec.Selector}}
+                      tr
+                        th {{$k}}
+                        td style="word-wrap:break-word" {{$v}}
+                      {{end}}
+              tr
+                th Ports
+                td
+                  table.table.table-bordered style="table-layout:fixed; margin-bottom:0px"
+                    thead
+                      tr
+                        th Port
+                        th TargetPort
+                    tbody
+                      {{range $port := .svc.Spec.Ports}}
+                      tr
+                        td {{$port.Port}}
+                        td {{$port.TargetPort.IntVal}}
+                      {{end}}
+              tr
+                th CreatedAt
+                td {{printTime .svc.CreationTimestamp}}
+
+    .col-md-8
+      {{if .rc}}
+      .panel.panel-primary
+        .panel-heading
+          .pull-right
+            a href="/delete/rc/{{.rc.Namespace}}/{{.rc.Name}}" style="color:white;"
+              i.fa.fa-times
+          h3.panel-title Replication Controller
+        .panel-body
+          table.table style="table-layout:fixed"
+            tbody
+              tr
+                th style="width:15%" Name
+                td {{.rc.Name}}
+              tr
+                th Docker Image
+                td
+                  ul.list-inline
+                    {{range .rc.Spec.Template.Spec.Containers}}
+                    li {{.Image}}
+                    {{end}}
+              tr
+                th Replicas
+                td {{.rc.Status.Replicas}}
+                  .pull-right
+                    a href="/scale/{{$.nsName}}/{{.svc.Name}}/{{$.rc.Name}}/{{$.rc.Spec.Replicas | incrRC}}" style="margin-right:10px;"
+                      i.fa.fa-plus
+                    a href="/scale/{{$.nsName}}/{{.svc.Name}}/{{$.rc.Name}}/{{$.rc.Spec.Replicas | decrRC}}"
+                      i.fa.fa-minus
+              tr
+                th Labels
+                td
+                  table.table.table-bordered style="table-layout:fixed; margin-bottom:0px"
+                    tbody
+                      {{range $k,$v := .rc.Labels}}
+                      tr
+                        th style="width: 20%;" {{$k}}
+                        td style="word-wrap:break-word;" {{$v}}
+                      {{end}}
+              tr
+                th Ports
+                td
+                  ul.list-inline
+                    {{range $container := .rc.Spec.Template.Spec.Containers}}
+                    {{range $port := $container.Ports}}
+                    li {{$port.ContainerPort}}
+                    {{end}}
+                    {{end}}
+              tr
+                th CreatedAt
+                td {{printTime .rc.CreationTimestamp}}
+              tr
+                th Pods
+                td
+                  {{range getPods $.nsName .rc.Spec.Selector}}
+                  .panel.panel-info
+                    .panel-heading
+                      .pull-right
+                        a href="/delete/po/{{.Namespace}}/{{.Name}}" style="color:white;"
+                          i.fa.fa-times
+                      h3.panel-title style="overflow: hidden; text-overflow:ellipsis;" {{.Name}}
+                    .panel-body
+                      dl.dl-horizontal
+                        dt PodIP
+                        dd {{.Status.PodIP}}
+                        dt Phase
+                        dd {{.Status.Phase}}
+                        dt CreatedAt
+                        dd {{printTime .Status.StartTime}}
+                        dd.pull-right
+                          a href="{{$.conf.Grafana.Host}}/dashboard/db/pods?var-namespace={{.Namespace}}&var-podname={{.Name}}" target=_blank
+                            i.fa.fa-area-chart Stats
+                  {{end}}
+      {{else}}
+      .jumbotron
+        .container
+          h2 No Active Replication Controller found.
+          {{if $.inactiveRCs}}
+          p Press "activate" on inactive RCs or Click Build/Deploy button.
+          {{else}}
+          p Click Build/Deploy button.
+          {{end}}
+      {{end}}
+
+      {{if $.inactiveRCs}}
+      .panel.panel-info style="width:auto"
+        .panel-heading
+          h3.panel-title Inactive Replication Controllers
+        .panel-body
+          {{range $i, $rc := $.inactiveRCs}}
+          .panel
+            .panel-body
+              table.table
+                tbody
+                  tr
+                    th Name
+                    td
+                      {{$rc.Name}}
+                  tr
+                    th Docker Image
+                    td
+                      ul.list-inline
+                        {{range .Spec.Template.Spec.Containers}}
+                        li {{.Image}}
+                        {{end}}
+                  tr
+                    th CreatedAt
+                    td {{printTime $rc.CreationTimestamp}}
+                  tr
+                    th
+                    td
+                      a.btn.btn-primary href=/namespaces/{{$.nsName}}/services/{{$.svc.Name}}/activate/{{$rc.Labels.sha}}/{{$rc.Labels.deploy_id}} Activate
+                      span style="padding-right:10px"
+                      a.btn.btn-warning href="/delete/rc/{{$.nsName}}/{{$rc.Name}}" Delete
+          {{end}}
+      {{end}}
+  hr
+
+  h3
+    a href=/namespaces/{{.svc.Namespace}}/services/{{.svc.Name}}/commits Commits
+
+  = include _github_commit .
+
+  hr
+
+  h3
+    a href=/namespaces/{{.svc.Namespace}}/services/{{.svc.Name}}/deployments Deployments
+
+  = include _github_deployment .
+
+= content script
+  script type="text/javascript" src="/static/node_modules/select2/dist/js/select2.full.min.js"
+  = javascript
+    $(document).ready(function () {
+      var is_form_init = true;
+      $("#git_branch").change(function (e){
+        if (is_form_init) {
+          is_form_init = false;
+          return;
+        }
+
+        var params = {
+          auto_deploy: {{.meta.AutoDeploy}},
+          github_org: {{.nsName}},
+          github_repo: {{.githubRepo}},
+          git_branch: $("#git_branch").val(),
+          replicas: {{.meta.Replicas}},
+          watchcenter: {{.meta.Watchcenter}},
+          environment: {{.meta.Environment}}
+        }
+        window.location.href = '/new?' + $.param(params);
+      });
+
+      $("#git_branch").select2().val('{{.gitBranch}}').change();
+    });

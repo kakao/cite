@@ -1,0 +1,247 @@
+= content header
+  link rel=stylesheet href=/static/node_modules/bootstrap-tokenfield/dist/css/bootstrap-tokenfield.min.css
+  link rel=stylesheet href=/static/node_modules/bootstrap-slider/dist/css/bootstrap-slider.min.css
+  script type="text/javascript" src="/static/node_modules/bootstrap-tokenfield/dist/bootstrap-tokenfield.min.js"
+  script type="text/javascript" src="/static/node_modules/bootstrap-slider/dist/bootstrap-slider.min.js"
+
+= content main
+  h3 New Service
+
+  ul#sourceTabs.nav.nav-tabs
+    li
+      a#tab_github href=#sourceGitHub data-toggle=tab GitHub
+    // show docker image tab only on dev mode
+    {{if eq $.conf.Cite.Version "DEV"}}
+    li
+      a#tab_dockerimage href=#sourceDockerImage data-toggle=tab Docker Image
+    {{end}}
+
+  .tab-content style="margin-top:30px"
+    .#sourceGitHub.tab-pane
+      form.form-horizontal action=/new method=post
+        input type=hidden name=source value=github
+
+        .form-group
+          label.col-sm-2.control-label for=inputGitHub
+            a href={{$.conf.GitHub.Host}} target=_blank GitHub
+          #inputGitHub.col-sm-10
+            span {{$.conf.GitHub.Host}}/
+            select#github_org.form-control name=github_org style="width: auto; display: inline-block;"
+              option value={{.userLogin|normalizeByHyphen}} selected=selected {{.userLogin}}
+              {{range .orgs}}
+              option value={{.Login|normalizeByHyphen}} {{.Login}}
+              {{end}}
+            span /
+            select#github_repo.form-control name=github_repo style="width: auto; display: inline-block;"
+            span :
+            select#git_branch.form-control name=git_branch style="width: auto; display: inline-block;"
+
+        .form-group
+          label.col-sm-2.control-label for=inputService Service
+          .col-sm-10
+            input#inputService.form-control name=service type=text
+
+        = include _meta_ports .
+
+        = include _meta_common .
+
+        .form-group
+          .col-sm-offset-2.col-sm-10
+            .checkbox
+              label
+                {{if .form.AutoDeploy}}
+                input name=auto_deploy type=checkbox checked=checked Auto Deploy
+                {{else}}
+                input name=auto_deploy type=checkbox Auto Deploy
+                {{end}}
+
+        = include _meta_envvar .
+
+        = include _meta_volume .
+
+        .form-group
+          .col-sm-offset-2.col-sm-10
+            button#githubSubmitBtn.btn.btn-primary style="margin-right:10px" type=submit Submit
+            button.btn.btn-default type=reset Reset
+
+    .#sourceDockerImage.tab-pane
+      form#imageSelectForm.form-horizontal action=/new method=post
+        input type=hidden name=source value=dockerimage
+
+        .form-group
+          label.col-sm-2.control-label for=inputNamespace Namespace
+          .col-sm-10
+            select#inputNamespace.form-control name=namespace
+              option value={{.userLogin|normalizeByHyphen}} selected=selected {{.userLogin}}
+              {{range .orgs}}
+              option value={{.Login|normalizeByHyphen}} {{.Login}}
+              {{end}}
+
+        .form-group
+          label.col-sm-2.control-label for=inputService Service
+          .col-sm-10
+            input#inputService.form-control name=service value={{.form.GithubRepo}} type=text
+
+        .form-group
+          label.col-sm-2.control-label Image Name
+          .col-sm-10
+            .input-group
+              input#inputImageName.form-control name=image_name value={{.form.ImageName}}
+              .input-group-btn
+                button#imageSearchBtn.btn.btn-primary Search
+            p.help-block search docker image. ex) mysql, idock.daumkakao.io/mesosphere/marathon
+
+        .form-group
+          label.col-sm-2.control-label Image Tag
+          .col-sm-10
+            select#inputImageTag.form-control name=image_tag
+              option value='' --- select image tag ---
+
+        = include _meta_ports .
+
+        = include _meta_common .
+
+        = include _meta_envvar .
+
+        = include _meta_volume .
+
+        .form-group
+          .col-sm-offset-2.col-sm-10
+            button#imageSubmitBtn.btn.btn-primary style="margin-right:10px" type=submit disabled=disabled Submit
+            button.btn.btn-default type=reset Reset
+
+= content script
+  script src=/static/node_modules/jquery-chained/jquery.chained.remote.js
+  = javascript
+    $(document).ready(function () {
+      // source: github
+      $("#github_repo").remoteChained({
+        parents: "#github_org",
+        url: "/ajax/github/repos",
+        loading: "Loading..."
+      });
+      $("#git_branch").remoteChained({
+        parents: "#github_repo",
+        depends: "#github_org",
+        url: "/ajax/github/branches",
+        loading: "Loading..."
+      });
+
+      var github_repo_init = false;
+      $("#github_repo").change(function (e) {
+        if ($("#github_repo").val() == '' || $("#github_repo").val() == null) {
+          $('#githubSubmitBtn').prop('disabled', true);
+          return;
+        }
+        $('#githubSubmitBtn').prop('disabled', false);
+
+        if (github_repo_init) {
+          return;
+        }
+        if ('{{.form.GithubRepo}}' != '' && $("#github_repo option").length > 0 && $("#github_repo").val() != '{{.form.GithubRepo}}') {
+          $("#github_repo").val('{{.form.GithubRepo}}');
+          github_repo_init = true;
+          $("#github_repo").change();
+        }
+      });
+
+      var git_branch_init = false;
+      $("#git_branch").change(function (e) {
+        if ($("#git_branch").val() == '' || $("#git_branch").val() == null) {
+          $('#githubSubmitBtn').prop('disabled', true);
+          return;
+        }
+        $('#githubSubmitBtn').prop('disabled', false);
+        var service = normalize($("#git_branch").val(), $("#github_repo").val());
+        $("#inputService").val(service);
+        if (git_branch_init) {
+          return;
+        }
+
+        if ('{{.form.GitBranch}}' != '' && $("#git_branch option").length > 0 && $("#git_branch").val() != '{{.form.GitBranch}}') {
+          $("#git_branch").val('{{.form.GitBranch}}');
+          var service = normalize($("#git_branch").val(), $("#github_repo").val());
+          $("#inputService").val(service);
+          git_branch_init = true;
+        }
+      });
+
+      if ('{{.form.GithubOrg}}' != '') {
+        $("#github_org").val('{{.form.GithubOrg}}')
+      }
+
+      $("#github_org").change();
+
+      // source: docker image
+      function listImageTags(name) {
+        var options = $('#inputImageTag');
+        options.empty();
+        options.append(new Option('--- loading ---', ''));
+
+        $.ajax({
+          url: '/ajax/docker/tags',
+          method: 'GET',
+          data: {"name": name}
+        }).done(function(data) {
+          options.empty();
+          if (data.length > 0) {
+            $.each(data, function(index, value) {
+              options.append(new Option(value, value));
+            });
+            options.val('latest');
+            if (options.val() != 'latest') {
+              options.prepend(new Option('--- select image tag ---', ''));
+            }
+            options.focus();
+            console.log(options.val());
+            $('#imageSubmitBtn').prop('disabled', false);
+          } else {
+            options.append(new Option('--- image not found ---', ''));
+          }
+        }).fail(function(xhr) {
+          alert('fail to fetch image tags:' + xhr);
+        });
+      }
+
+      $('.tokenfield').tokenfield({
+        createTokensOnBlur: true
+      });
+
+      $('#imageSearchBtn').click(function() {
+        listImageTags($('#inputImageName').val());
+      });
+
+      $('#inputImageName').on('input', function() {
+        $('#imageSubmitBtn').prop('disabled', true);
+      });
+
+      $('#imageSelectForm').on('submit', function(e) {
+        if ($('#inputImageName').is(':focus')) {
+          e.preventDefault();
+          $('#imageSearchBtn').click();
+        }
+      });
+
+      // source tabs
+      $("#sourceTabs").click(function(e) {
+        e.preventDefault();
+        $(this).tab("show");
+      });
+
+      $(".nav-tabs a").on('shown.bs.tab', function(e) {
+        if (e.target.id == 'tab_github') {
+          $('#github_org').focus();
+        } else if (e.target.id == 'tab_dockerimage') {
+          $('#inputNamespace').focus();
+        }
+      });
+
+      // select current tab. default to first tab.
+      if ($("#tab_{{.form.Source}}").length > 0) {
+        $("#tab_{{.form.Source}}").tab("show");
+      } else {
+        $("#sourceTabs a:first").tab("show");
+        // $("#sourceTabs a:nth-child(1)").tab("show");
+      }
+    });
+

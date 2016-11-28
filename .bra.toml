@@ -1,0 +1,29 @@
+[run]
+init_cmds = [
+  ["go", "install"],
+  ["go", "build"],
+  #["PHASE=pgx-dev", "./cite"]
+  ["./cite"]
+]                               # Commands run in start
+watch_all = true                # Watch all sub-directories
+watch_dirs = [
+  "$WORKDIR/conf",
+  "$WORKDIR/controller",
+  "$WORKDIR/goroutines",
+  "$WORKDIR/models",
+]                               # Directories to watch
+watch_exts = [".go", ".conf"]   # Extensions to watch
+ignore = [".git", "vendor"]     # Directories to exclude from watching
+ignore_files = []               # Regexps for ignoring specific notifies
+build_delay = 1500              # Minimal interval to Trigger build event
+interrupt_timout = 15           # Time to wait until force kill
+graceful_kill = false
+cmds = [
+  ["go", "build"],
+  #["PHASE=pgx-dev", "./cite"]
+  ["./cite"]
+]                               # Commands to run
+
+[sync]
+listen_addr = ":5050"
+remote_addr = ":5050"

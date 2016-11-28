@@ -1,0 +1,3 @@
+= content main
+  h3 Error
+  pre {{.err}}

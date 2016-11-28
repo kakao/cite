@@ -1,0 +1,11 @@
+.form-group
+  label.col-sm-2.control-label for=inputHTTPPort HTTP Ports
+  .col-sm-10
+    input#inputHTTPPort.form-control.tokenfield name=http_port value={{.form.HTTPPort}} type=text
+    p.help-block write port number and press enter. first port forwarded to 80.
+
+.form-group style=display:none
+  label.col-sm-2.control-label for=inputTCPPort TCP Ports
+  .col-sm-10
+    input#inputTCPPort.form-control.tokenfield name=tcp_port value={{.form.TCPPort}} type=text
+    p.help-block write port number and press enter.

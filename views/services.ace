@@ -1,0 +1,35 @@
+= content main
+  h3 <strong>{{.nsName}}</strong> Services
+
+  table.table
+    thead
+      tr
+        th Service
+        th Labels
+        th Selectors
+        th Age
+        th
+    tbody
+      {{range .svcs}}
+      tr
+        td
+          a href="/namespaces/{{$.nsName}}/services/{{.Name}}" {{.Name}}
+        td
+          ul.list-unstyled
+            {{range $k,$v := .Labels}}
+            li {{printf "%s:%s" $k $v}}
+            {{end}}
+        td
+          ul.list-unstyled
+            {{range $k,$v := .Spec.Selector}}
+            li {{printf "%s:%s" $k $v}}
+            {{end}}
+        td {{printTime .CreationTimestamp}}
+        td style="text-align:center"
+          a href="/delete/svc/{{.Namespace}}/{{.Name}}" onclick="return confirm('about to delete service {{.Name}}. are you sure?')"
+            i.fa.fa-times
+      {{else}}
+      tr
+        td colspan=5 style="text-align:center"
+          h4.text-info ...no services yet...
+      {{end}}
