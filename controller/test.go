@@ -440,7 +440,7 @@ func GetWatchcenterGroupIDs(c echo.Context) error {
 }
 
 func GetSlackSend(c echo.Context) error {
-	token := "xoxp-109652373045-108890033585-110291547335-ba5017e265c4ebf27611d80ccf7e4895"
+	token := "xoxb-110811105782-mrTss4CmHSyvffXehyZPg22D"
 	api := slack.New(token)
 
 	// channel, err := api.GetChannelInfo("#general")
@@ -449,7 +449,8 @@ func GetSlackSend(c echo.Context) error {
 	// logger.Infof("channel: %v", channel)
 	// logger.Infof("channel id: %v", channel.ID)
 	params := slack.PostMessageParameters{}
-	channel, ts, err := api.PostMessage("C37K6B0LD", "hello, there! 한글 메시지다!!", params)
+	// channel, ts, err := api.PostMessage("C37K6B0LD", "hello, there! 한글 메시지다!!", params)
+	channel, ts, err := api.PostMessage("C0HFSMUFQ", "hello, there! 한글 메시지다!!", params)
 	logger.Infof("err: %v", err)
 	logger.Infof("channel: %v", channel)
 	logger.Infof("timestamp: %v", ts)

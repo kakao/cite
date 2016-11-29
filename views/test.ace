@@ -1,4 +1,20 @@
 = content main
-  a href="https://slack.com/oauth/authorize?scope=incoming-webhook,channels:read,chat:write:user&client_id={{$.conf.Notification.Slack.ClientID}}&redirect_uri={{$.conf.Cite.Host}}{{$.conf.Cite.ListenPort}}{{$.conf.Notification.Slack.RedirectURI}}"
+  a href="https://slack.com/oauth/authorize?scope=incoming-webhook,bot&client_id={{$.conf.Notification.Slack.ClientID}}&redirect_uri={{$.conf.Cite.Host}}{{$.conf.Cite.ListenPort}}{{$.conf.Notification.Slack.RedirectURI}}" target="_blank"
     img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"
   h4 slack client id: {{$.conf.Notification.Slack.ClientID}}
+
+  button.btn.btn-primary type="button" data-toggle="modal" data-target="#slackModal" Add to slack
+
+  .modal.fade#slackModal tabindex="-1" role="dialog" aria-labelledby="slackModalLabel"
+    .modal-dialog role="document"
+      .modal-content
+        .modal-header
+          button.close type="button" data-dismiss="modal" aria-label="Close"
+            span aria-hidden="true" &times;
+          h4.modal-title id="slackModalLabel" Add to slack
+        .modal-body
+          a href="https://slack.com/oauth/authorize?scope=incoming-webhook,bot&client_id={{$.conf.Notification.Slack.ClientID}}&redirect_uri={{$.conf.Cite.Host}}{{$.conf.Cite.ListenPort}}{{$.conf.Notification.Slack.RedirectURI}}" target="_blank"
+            img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"
+        .modal-footer
+          button.btn.btn-default type="button" data-dismiss="modal" Close
+          button.btn.btn-primary type="button" Save changes
