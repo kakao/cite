@@ -24,37 +24,41 @@ func GetNewService(c echo.Context) error {
 	token := session.Values["token"].(string)
 	form := new(models.Metadata)
 
-	// TODO: change query param to something else.
-	form.AutoDeploy = true
-	if c.QueryParam("auto_deploy") != "" {
-		form.AutoDeploy, _ = strconv.ParseBool(c.QueryParam("auto_deploy"))
-	}
-	form.GithubOrg = c.QueryParam("github_org")
-	form.GithubRepo = c.QueryParam("github_repo")
-	form.GitBranch = c.QueryParam("git_branch")
-	form.ProbePath = "/"
-	form.Replicas = 2
-	if c.QueryParam("replicas") != "" {
-		form.Replicas, _ = strconv.Atoi(c.QueryParam("replicas"))
-	}
-	form.Watchcenter, _ = strconv.Atoi(c.QueryParam("watchcenter"))
-	form.Environment = fmt.Sprintf(`## this is comment
+	if len(c.QueryParam("base_ns")) > 0 &&
+		len(c.QueryParam("base_svc")) > 0 &&
+		len(c.QueryParam("branch")) > 0 {
+		// copy base service metadata
+		baseNsName := c.QueryParam("base_ns")
+		baseSvcName := c.QueryParam("base_svc")
+		branch := c.QueryParam("branch")
+
+		_, meta, err := k8s.GetService(baseNsName, baseSvcName)
+		if err != nil {
+			errMsg := fmt.Sprintf("error while getting base service: %v", err)
+			logger.Error(errMsg)
+			return echo.NewHTTPError(http.StatusServiceUnavailable, errMsg)
+		}
+		form = meta
+		form.GitBranch = branch
+	} else {
+		// set default values
+		form.AutoDeploy = true
+		form.ProbePath = "/"
+		form.Replicas = 2
+		form.Environment = fmt.Sprintf(`## this is comment
 ## usage : KEY=VALUE
 CITE_VERSION=%s`, models.Conf.Cite.Version)
-	if c.QueryParam("environment") != "" {
-		form.Environment = c.QueryParam("environment")
-	}
-
-	form.Notification = []models.Notification{}
-	if len(models.Conf.Notification.Watchcenter.API) > 0 {
-		form.Notification = append(form.Notification, models.Notification{
-			Driver: "watchcenter",
-		})
-	}
-	if len(models.Conf.Notification.Slack.ClientID) > 0 && len(models.Conf.Notification.Slack.ClientSecret) > 0 {
-		form.Notification = append(form.Notification, models.Notification{
-			Driver: "slack",
-		})
+		form.Notification = []models.Notification{}
+		if len(models.Conf.Notification.Watchcenter.API) > 0 {
+			form.Notification = append(form.Notification, models.Notification{
+				Driver: "watchcenter",
+			})
+		}
+		if len(models.Conf.Notification.Slack.ClientID) > 0 && len(models.Conf.Notification.Slack.ClientSecret) > 0 {
+			form.Notification = append(form.Notification, models.Notification{
+				Driver: "slack",
+			})
+		}
 	}
 
 	if form.GithubOrg != "" && form.GithubRepo != "" && form.GitBranch != "" {

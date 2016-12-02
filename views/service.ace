@@ -8,12 +8,8 @@
       dl.dl-horizontal
         dt AutoDeploy
         dd {{.meta.AutoDeploy}}
-        dt ContainerPort
-        dd {{.meta.ContainerPort}}
         dt Replicas
         dd {{.meta.Replicas}}
-        dt Watchcenter
-        dd {{.meta.Watchcenter}}
     .col-md-6
        dl
          dt Environment Variables
@@ -243,6 +239,7 @@
   = javascript
     $(document).ready(function () {
       var is_form_init = true;
+
       $("#git_branch").change(function (e){
         if (is_form_init) {
           is_form_init = false;
@@ -250,13 +247,9 @@
         }
 
         var params = {
-          auto_deploy: {{.meta.AutoDeploy}},
-          github_org: {{.nsName}},
-          github_repo: {{.githubRepo}},
-          git_branch: $("#git_branch").val(),
-          replicas: {{.meta.Replicas}},
-          watchcenter: {{.meta.Watchcenter}},
-          environment: {{.meta.Environment}}
+          base_ns: {{.nsName}},
+          base_svc: {{.svcName}},
+          branch: $("#git_branch").val()
         }
         window.location.href = '/new?' + $.param(params);
       });
