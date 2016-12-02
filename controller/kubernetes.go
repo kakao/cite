@@ -622,7 +622,7 @@ func PostServiceSettings(c echo.Context) error {
 
 	// TODO: remove this. backward compatibility : fill watchcenter
 	for _, noti := range form.Notification {
-		if noti.Driver == "watchcenter" {
+		if noti.Driver == "watchcenter" && len(noti.Endpoint) > 0 {
 			form.Watchcenter, err = strconv.Atoi(noti.Endpoint)
 			if err != nil {
 				errMsg := fmt.Sprintf("error while decoding watchcenter id %v: %v", noti.Endpoint, err)

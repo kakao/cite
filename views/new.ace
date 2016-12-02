@@ -8,8 +8,6 @@
   h3 New Service
 
   form.form-horizontal action=/new method=post
-    input type=hidden name=source value=github
-
     .form-group
       label.col-sm-2.control-label for=inputGitHub
         a href={{$.conf.GitHub.Host}} target=_blank GitHub
