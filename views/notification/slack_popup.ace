@@ -1,0 +1,10 @@
+= content script
+  = javascript
+    $(document).ready(function () {
+      var parent = window.opener;
+      var endpoint = '{{.webhookURL}}';
+      var description = 'team: {{.team}}' + '\n'
+        + 'channel: {{.channel}}'
+      parent.notiCallback('slack', endpoint, description);
+      window.close();
+    });

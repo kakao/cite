@@ -29,7 +29,7 @@ var (
 func NewWatchCenter() *WatchCenter {
 	wcOnce.Do(func() {
 		wcInst = &WatchCenter{
-			baseURL: Conf.Notification.WatchcenterAPI,
+			baseURL: Conf.Notification.Watchcenter.API,
 		}
 	})
 	return wcInst

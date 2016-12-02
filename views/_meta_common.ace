@@ -1,26 +1,36 @@
 .form-group
-  label.col-sm-2.control-label for=inputWatchcenter
-    a href=https://noti.daumkakao.io target=_blank Watchcenter
+  label.col-sm-2.control-label Notifications
   .col-sm-10
-    table.table.table-hover id="watchcenter_table" style="margin-bottom:0px;"
+    table.table.table-hover#noti_table style="margin-bottom:0px;"
       thead
         tr
-          th ID
+          th Enable
           th Name
+          th Config
+          th Endpoint
           th Description
       tbody
-        {{range listWatchcenterGroups .userLogin}}
+        {{range $idx, $noti := .form.Notification}}
         tr
           td
-            .radio style="margin:0px; padding-top:0px;"
+            .checkbox style="margin:0px; padding-top:0px;"
               label
-                input type="radio" name="watchcenter" id="wc_group_id_{{.Id}}" value={{.Id}} {{.Id}}
-          td {{.Name}}
-          td {{.Description}}
-        {{else}}
-        tr
-          td colspan=3
-            p.text-warning No watchcenter group found. Please join existing group or create one on <a href="https://noti.daumkakao.io" target="_blank">Watchcenter</a>
+                {{if $noti.Enable}}
+                input type="checkbox" checked=checked name="noti.{{$idx}}.enable"
+                {{else}}
+                input type="checkbox" name="noti.{{$idx}}.enable"
+                {{end}}
+          td
+            input type="text" name="noti.{{$idx}}.driver" readonly=readonly value="{{$noti.Driver}}"
+          td
+            a.btn.btn-sm.btn-default onclick="notiPopup('{{$noti.Driver}}')"
+              i.fa.fa-wrench
+          td
+            span.description name="noti.{{$idx}}.endpoint" {{$noti.Endpoint}}
+            input type="hidden" name="noti.{{$idx}}.endpoint" value="{{$noti.Endpoint}}"
+          td
+            span.description name="noti.{{$idx}}.description" {{$noti.Description}}
+            input type="hidden" name="noti.{{$idx}}.description" value="{{$noti.Description}}"
         {{end}}
 
 .form-group
@@ -29,15 +39,35 @@
     input#inputReplicas.form-control name=replicas value={{.form.Replicas}} type=text data-provide=slider data-slider-min=1 data-slider-max={{$.conf.Kubernetes.MaxPods}} data-slider-step=1 data-slider-value={{.form.Replicas}} data-slider-tooltip=always
 
 = javascript
-  // select first watchcenter group
-  if ('{{.form.Watchcenter}}' == 0) {
-    $('input[name=watchcenter]:first').prop('checked', true);
-  } else {
-    $('#wc_group_id_{{.form.Watchcenter}}').prop('checked', true)
+  $('#noti_table input[type=checkbox]').change(function() {
+    if ($(this).is(':checked')) {
+      var endpoint = $(this).closest('tr').find('td input[name$=endpoint]');
+      if (!endpoint.val()) {
+        var driver = $(this).closest('tr').find('td input[name$=driver]');
+        notiPopup(driver.val());
+      }
+    }
+  });
+
+  function notiShowHiddenValues() {
+    $('#noti_table span').each(function(idx, el) {
+      $(el).text($(el).siblings('input[type=hidden]').val());
+    });
   }
 
-  // select watchcenter on table row click
-  $('#watchcenter_table tr').click(function(){
-    opt = $(this).find('td:first input');
-    opt.prop('checked', true);
-  })
+  function notiCallback(driver, endpoint, description) {
+    var row = $('#noti_table').find('td input[name$=driver][value=' + driver + ']').closest('tr');
+    var enableInput = row.find('td input[name$=enable]')
+    var epInput = row.find('td input[name$=endpoint]')
+    var descInput = row.find('td input[name$=description]')
+
+    enableInput.prop('checked', true);
+    epInput.val(endpoint);
+    descInput.val(description);
+    
+    notiShowHiddenValues();
+  }
+
+  function notiPopup(driver) {
+    window.open('/v1/notification/' + driver, '', 'width=900,height=850');
+  }

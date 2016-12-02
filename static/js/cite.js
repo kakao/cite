@@ -11,5 +11,5 @@ function normalize() {
 $(document).ready(function () {
   $("#region_selector").change(function (e) {
     window.location.href = e.target.value;
-  })
+  });
 });

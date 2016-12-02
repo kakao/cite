@@ -6,11 +6,12 @@ import (
 	"time"
 
 	"github.com/deckarep/golang-set"
+	"github.com/gorilla/schema"
 	"github.com/gorilla/sessions"
+	"github.com/kakao/cite/models"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
 	gologging "github.com/op/go-logging"
-	"github.com/kakao/cite/models"
 )
 
 var (
@@ -27,6 +28,7 @@ var (
 	watchcenter    = models.NewWatchCenter()
 
 	sessionStore = sessions.NewCookieStore([]byte("1VMo28DykUsIM1L8"))
+	formDecoder  = schema.NewDecoder()
 )
 
 func init() {
@@ -39,7 +41,7 @@ func init() {
 }
 
 func getSession(c echo.Context) *sessions.Session {
-	session, err := sessionStore.Get(c.Request().(*standard.Request).Request, models.Conf.Cite.Version)	
+	session, err := sessionStore.Get(c.Request().(*standard.Request).Request, models.Conf.Cite.Version)
 	if err != nil {
 		logger.Error("failed to get session")
 	}

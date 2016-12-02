@@ -8,24 +8,32 @@ import (
 )
 
 type Metadata struct {
-	Source         string `json:"source" form:"source"`
-	Namespace      string `json:"namespace" form:"namespace"`
-	Service        string `json:"service" form:"service"`
-	GithubOrg      string `json:"github_org" form:"github_org"`
-	GithubRepo     string `json:"github_repo" form:"github_repo"`
-	GitBranch      string `json:"git_branch" form:"git_branch"`
-	ImageName      string `json:"image_name" form:"image_name"`
-	ImageTag       string `json:"image_tag" form:"image_tag"`
-	AutoDeploy     bool   `json:"auto_deploy" form:"auto_deploy"`
-	ContainerPort  int    `json:"container_port" form:"container_port"`
-	ContainerPorts []int  `json:"container_ports"`
-	HTTPPort       string `json:"http_port" form:"http_port"`
-	TCPPort        string `json:"tcp_port" form:"tcp_port"`
-	ProbePath      string `json:"probe_path" form:"probe_path"`
-	Replicas       int    `json:"replicas" form:"replicas"`
-	Watchcenter    int    `json:"watchcenter" form:"watchcenter"`
-	Environment    string `json:"environment" form:"environment"`
+	Source         string         `json:"source" form:"source" schema:"source"`
+	Namespace      string         `json:"namespace" form:"namespace" form:"namespace"`
+	Service        string         `json:"service" form:"service" schema:"service"`
+	GithubOrg      string         `json:"github_org" form:"github_org" schema:"github_org"`
+	GithubRepo     string         `json:"github_repo" form:"github_repo" schema:"github_repo"`
+	GitBranch      string         `json:"git_branch" form:"git_branch" schema:"git_branch"`
+	ImageName      string         `json:"image_name" form:"image_name" schema:"image_name"`
+	ImageTag       string         `json:"image_tag" form:"image_tag" schema:"image_tag"`
+	AutoDeploy     bool           `json:"auto_deploy" form:"auto_deploy" schema:"auto_deploy"`
+	ContainerPort  int            `json:"container_port" form:"container_port" schema:"container_port"`
+	ContainerPorts []int          `json:"container_ports"`
+	HTTPPort       string         `json:"http_port" form:"http_port" schema:"http_port"`
+	TCPPort        string         `json:"tcp_port" form:"tcp_port" schema:"tcp_port"`
+	ProbePath      string         `json:"probe_path" form:"probe_path" schema:"probe_path"`
+	Replicas       int            `json:"replicas" form:"replicas" schema:"replicas"`
+	Watchcenter    int            `json:"watchcenter" form:"watchcenter" schema:"watchcenter"`
+	Environment    string         `json:"environment" form:"environment" schema:"environment"`
+	Notification   []Notification `json:"notification" schema:"noti"`
 	environmentMap map[string]string
+}
+
+type Notification struct {
+	Driver      string `json:"driver" schema:"driver"`
+	Enable      bool   `json:"enable" schema:"enable"`
+	Endpoint    string `json:"endpoint" schema:"endpoint"`
+	Description string `json:"description" schema:"description"`
 }
 
 func (this *Metadata) EnvironmentMap() map[string]string {

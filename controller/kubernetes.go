@@ -9,10 +9,11 @@ import (
 	"unicode"
 
 	"github.com/google/go-github/github"
-	"github.com/labstack/echo"
-	gologging "github.com/op/go-logging"
 	"github.com/kakao/cite/goroutines"
 	"github.com/kakao/cite/models"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/engine/standard"
+	gologging "github.com/op/go-logging"
 	k8sApi "k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/labels"
 	"k8s.io/kubernetes/pkg/util/sets"
@@ -23,6 +24,7 @@ func GetNewService(c echo.Context) error {
 	token := session.Values["token"].(string)
 	form := new(models.Metadata)
 
+	// TODO: change query param to something else.
 	form.AutoDeploy = true
 	if c.QueryParam("auto_deploy") != "" {
 		form.AutoDeploy, _ = strconv.ParseBool(c.QueryParam("auto_deploy"))
@@ -41,6 +43,18 @@ func GetNewService(c echo.Context) error {
 CITE_VERSION=%s`, models.Conf.Cite.Version)
 	if c.QueryParam("environment") != "" {
 		form.Environment = c.QueryParam("environment")
+	}
+
+	form.Notification = []models.Notification{}
+	if len(models.Conf.Notification.Watchcenter.API) > 0 {
+		form.Notification = append(form.Notification, models.Notification{
+			Driver: "watchcenter",
+		})
+	}
+	if len(models.Conf.Notification.Slack.ClientID) > 0 && len(models.Conf.Notification.Slack.ClientSecret) > 0 {
+		form.Notification = append(form.Notification, models.Notification{
+			Driver: "slack",
+		})
 	}
 
 	if form.GithubOrg != "" && form.GithubRepo != "" && form.GitBranch != "" {
@@ -82,7 +96,14 @@ func PostNewService(c echo.Context) error {
 		logger.Warning(errMsg)
 		session.AddFlash(errMsg)
 		saveSession(session, c)
-		return c.Redirect(http.StatusSeeOther, c.Request().Referer())
+
+		githubClient := models.NewGitHub(token)
+		orgs, _ := githubClient.ListOrgs()
+		return c.Render(http.StatusBadRequest, "new",
+			map[string]interface{}{
+				"form": form,
+				"orgs": orgs,
+			})
 	}
 
 	// monkey patch for checkbox value=on
@@ -91,21 +112,32 @@ func PostNewService(c echo.Context) error {
 		fp["auto_deploy"] = []string{"true"}
 	}
 
-	if err := c.Bind(form); err != nil {
+	req := c.Request().(*standard.Request).Request
+	if err := req.ParseForm(); err != nil {
 		errMsg := fmt.Sprintf("error while parsing form %v, %v", form, err)
 		return onError(errMsg)
+	}
+
+	if err := formDecoder.Decode(form, req.PostForm); err != nil {
+		errMsg := fmt.Sprintf("error while decoding form %v, %v", form, err)
+		return onError(errMsg)
+	}
+
+	// TODO: remove this. backward compatibility : fill watchcenter
+	for _, noti := range form.Notification {
+		if noti.Driver == "watchcenter" && len(noti.Endpoint) > 0 {
+			form.Watchcenter, err = strconv.Atoi(noti.Endpoint)
+			if err != nil {
+				errMsg := fmt.Sprintf("error while decoding watchcenter id %v: %v", noti.Endpoint, err)
+				return onError(errMsg)
+			}
+		}
 	}
 
 	// print form input for debug
 	if logger.IsEnabledFor(gologging.DEBUG) {
 		formJson, _ := json.MarshalIndent(form, "", "  ")
-		logger.Debugf("%s", formJson)
-	}
-
-	// validate watchcenter group id
-	if form.Watchcenter <= 0 {
-		errMsg := fmt.Sprintf("invalid watchcenter group id : %d", form.Watchcenter)
-		return onError(errMsg)
+		logger.Debugf("form: %s", formJson)
 	}
 
 	// validate number of replicas
@@ -585,7 +617,12 @@ func PostServiceSettings(c echo.Context) error {
 		session := getSession(c)
 		session.AddFlash(errMsg)
 		saveSession(session, c)
-		return c.Redirect(http.StatusSeeOther, c.Request().Referer())
+		return c.Render(http.StatusBadRequest, "new",
+			map[string]interface{}{
+				"form":    form,
+				"nsName":  nsName,
+				"svcName": svcName,
+			})
 	}
 
 	// monkey patch for checkbox value=on
@@ -593,21 +630,33 @@ func PostServiceSettings(c echo.Context) error {
 	if _, ok := fp["auto_deploy"]; ok {
 		fp["auto_deploy"] = []string{"true"}
 	}
-	if err := c.Bind(form); err != nil {
+
+	req := c.Request().(*standard.Request).Request
+	if err := req.ParseForm(); err != nil {
 		errMsg := fmt.Sprintf("error while parsing form %v, %v", form, err)
 		return onError(errMsg)
+	}
+
+	if err := formDecoder.Decode(form, req.PostForm); err != nil {
+		errMsg := fmt.Sprintf("error while decoding form %v, %v", form, err)
+		return onError(errMsg)
+	}
+
+	// TODO: remove this. backward compatibility : fill watchcenter
+	for _, noti := range form.Notification {
+		if noti.Driver == "watchcenter" {
+			form.Watchcenter, err = strconv.Atoi(noti.Endpoint)
+			if err != nil {
+				errMsg := fmt.Sprintf("error while decoding watchcenter id %v: %v", noti.Endpoint, err)
+				return onError(errMsg)
+			}
+		}
 	}
 
 	// print form input for debug
 	if logger.IsEnabledFor(gologging.DEBUG) {
 		formJSON, _ := json.MarshalIndent(form, "", "  ")
-		logger.Debugf("%s", formJSON)
-	}
-
-	// validate watchcenter group id
-	if form.Watchcenter <= 0 {
-		errMsg := fmt.Sprintf("invalid watchcenter group id : %d", form.Watchcenter)
-		return onError(errMsg)
+		logger.Debugf("form: %s", formJSON)
 	}
 
 	// validate number of replicas

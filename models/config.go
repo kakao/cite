@@ -61,8 +61,10 @@ type Config struct {
 		MaxMemory       string
 	}
 	Notification struct {
-		WatchcenterAPI string
-		Slack          struct {
+		Watchcenter struct {
+			API string
+		}
+		Slack struct {
 			ClientID     string
 			ClientSecret string
 			RedirectURI  string

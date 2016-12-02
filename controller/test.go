@@ -8,9 +8,10 @@ import (
 	"strconv"
 
 	"github.com/deckarep/golang-set"
+	"github.com/gorilla/schema"
 	"github.com/kakao/cite/models"
 	"github.com/labstack/echo"
-	"github.com/nlopes/slack"
+	"github.com/labstack/echo/engine/standard"
 )
 
 func GetSession(c echo.Context) error {
@@ -421,39 +422,32 @@ func GetKubernetesService(c echo.Context) error {
 	return c.JSON(http.StatusOK, svcs)
 }
 
-func GetWatchcenterGroupIDs(c echo.Context) error {
-	session := getSession(c)
-	username, ok := session.Values["userLogin"]
-	if !ok {
-		return echo.NewHTTPError(http.StatusUnauthorized, "username not found")
-	}
-	wc := models.NewWatchCenter()
-	wcGroups, err := wc.ListGroups(username.(string))
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	}
-
-	return c.Render(http.StatusOK, "test_wc",
-		map[string]interface{}{
-			"wcGroups": wcGroups,
-		})
+func GetFormSubmit(c echo.Context) error {
+	return c.Render(http.StatusOK, "test", map[string]interface{}{})
 }
 
-func GetSlackSend(c echo.Context) error {
-	token := "xoxb-110811105782-mrTss4CmHSyvffXehyZPg22D"
-	api := slack.New(token)
+func PostFormSubmit(c echo.Context) error {
+	type SubmitTest struct {
+		Aa string `schema:"aa" json:"aa"`
+		Bb int    `schema:"bb" json:"bb"`
+		Cc string `schema:"cc" json:"cc"`
+	}
 
-	// channel, err := api.GetChannelInfo("#general")
-	// logger.Infof("err: %v", err)
+	req := c.Request().(*standard.Request).Request
+	if err := req.ParseForm(); err != nil {
+		logger.Error("failed to parse form: %v", err)
+		return c.Render(http.StatusOK, "test", map[string]interface{}{})
+	}
 
-	// logger.Infof("channel: %v", channel)
-	// logger.Infof("channel id: %v", channel.ID)
-	params := slack.PostMessageParameters{}
-	// channel, ts, err := api.PostMessage("C37K6B0LD", "hello, there! 한글 메시지다!!", params)
-	channel, ts, err := api.PostMessage("C0HFSMUFQ", "hello, there! 한글 메시지다!!", params)
-	logger.Infof("err: %v", err)
-	logger.Infof("channel: %v", channel)
-	logger.Infof("timestamp: %v", ts)
+	form := new(SubmitTest)
+	decoder := schema.NewDecoder()
+	if err := decoder.Decode(form, req.PostForm); err != nil {
+		logger.Error("failed to decode form: %v", err)
+		return c.Render(http.StatusOK, "test", map[string]interface{}{
+			"form": form,
+		})
+	}
 
-	return fmt.Errorf("not implemented yet")
+	logger.Infof("form: %v", form)
+	return c.JSON(http.StatusOK, form)
 }

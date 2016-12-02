@@ -44,9 +44,10 @@ func main() {
 	api := e.Group("/v1")
 	{
 		api.POST("/github", controller.PostGithubCallback)
-		api.GET("/slack", controller.GetSlackCallback)
 		api.GET("/cite/service", controller.GetCiteService)
 		api.GET("/cite/gc", controller.GetGarbageCollection)
+		api.GET("/notification/watchcenter", controller.GetWatchcenterGroupID)
+		api.GET("/notification/slack", controller.GetSlackOAuthToken)
 	}
 
 	ajax := e.Group("ajax")
@@ -119,8 +120,8 @@ func main() {
 		test.GET("/session", controller.GetSession)
 		test.GET("/session_set", controller.PostSession)
 		test.GET("/session_unset", controller.DeleteSession)
-		test.GET("/wc_groupid", controller.GetWatchcenterGroupIDs)
-		test.GET("/slack/send", controller.GetSlackSend)
+		test.GET("/submit", controller.GetFormSubmit)
+		test.POST("/submit", controller.PostFormSubmit)
 	}
 
 	// start server
