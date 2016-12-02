@@ -8,14 +8,11 @@ import (
 )
 
 type Metadata struct {
-	Source         string         `json:"source" form:"source" schema:"source"`
 	Namespace      string         `json:"namespace" form:"namespace" form:"namespace"`
 	Service        string         `json:"service" form:"service" schema:"service"`
 	GithubOrg      string         `json:"github_org" form:"github_org" schema:"github_org"`
 	GithubRepo     string         `json:"github_repo" form:"github_repo" schema:"github_repo"`
 	GitBranch      string         `json:"git_branch" form:"git_branch" schema:"git_branch"`
-	ImageName      string         `json:"image_name" form:"image_name" schema:"image_name"`
-	ImageTag       string         `json:"image_tag" form:"image_tag" schema:"image_tag"`
 	AutoDeploy     bool           `json:"auto_deploy" form:"auto_deploy" schema:"auto_deploy"`
 	ContainerPort  int            `json:"container_port" form:"container_port" schema:"container_port"`
 	ContainerPorts []int          `json:"container_ports"`
@@ -56,14 +53,11 @@ func (this *Metadata) EnvironmentMap() map[string]string {
 // not using reflection due to performance problem.
 func (this *Metadata) Iter() map[string]string {
 	m := make(map[string]string)
-	m["source"] = fmt.Sprintf(`"%s"`, this.Source)
 	m["namespace"] = fmt.Sprintf(`"%s"`, this.Namespace)
 	m["service"] = fmt.Sprintf(`"%s"`, this.Service)
 	m["github_org"] = fmt.Sprintf(`"%s"`, this.GithubOrg)
 	m["github_repo"] = fmt.Sprintf(`"%s"`, this.GithubRepo)
 	m["git_branch"] = fmt.Sprintf(`"%s"`, this.GitBranch)
-	m["image_name"] = fmt.Sprintf(`"%s"`, this.ImageName)
-	m["image_tag"] = fmt.Sprintf(`"%s"`, this.ImageTag)
 	m["auto_deploy"] = strconv.FormatBool(this.AutoDeploy)
 	m["container_port"] = strconv.Itoa(this.ContainerPort)
 	m["http_port"] = fmt.Sprintf(`"%s"`, this.HTTPPort)

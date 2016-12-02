@@ -198,71 +198,62 @@ func PostNewService(c echo.Context) error {
 		return onError(errMsg)
 	}
 
-	switch form.Source {
-	case "github":
-		githubClient := models.NewGitHub(token)
-		repo, err := githubClient.GetRepo(form.GithubOrg, form.GithubRepo)
-		if err != nil {
-			errMsg := fmt.Sprintf("Failed to get repository metadata from github %s/%s: %v", form.GithubOrg, form.GithubRepo, err)
-			return onError(errMsg)
-		}
-
-		// check if user has push permission on repository
-		if perm, ok := (*repo.Permissions)["push"]; !ok || !perm {
-			errMsg := fmt.Sprintf("You don't have push permission on %s/%s.", form.GithubOrg, form.GithubRepo)
-			return onError(errMsg)
-		}
-
-		// check if Dockerfile exists in repository
-		hasDockerfile, err := githubClient.CheckDockerfile(form.GithubOrg, form.GithubRepo)
-		if err != nil {
-			errMsg := fmt.Sprintf("Failed to check repository Dockerfile: %v", err)
-			return onError(errMsg)
-		}
-		if !hasDockerfile {
-			errMsg := fmt.Sprintf("Your repository %s/%s doesn't have /Dockerfile on any branch. Please create one",
-				form.GithubOrg, form.GithubRepo)
-			return onError(errMsg)
-		}
-
-		// ensure github hook
-		err = githubClient.UpsertHook(form.GithubOrg, form.GithubRepo)
-		if err != nil {
-			errMsg := fmt.Sprintf("Failed to create github hook on %s/%s: %v", form.GithubOrg, form.GithubRepo, err)
-			return onError(errMsg)
-		}
-
-		// ensure github collaborator
-		err = githubClient.AddCollaborator(form.GithubOrg, form.GithubRepo, models.Conf.GitHub.Username)
-		if err != nil {
-			errMsg := fmt.Sprintf("Failed to add github collaborator %s on %s/%s: %v",
-				models.Conf.GitHub.Username, form.GithubOrg, form.GithubRepo, err)
-			return onError(errMsg)
-		}
-
-		// upsert k8s service
-		svcLabels := k8s.GetLabels(form.GithubRepo, form.GitBranch)
-		svcSelector := make(map[string]string)
-		for k, v := range svcLabels {
-			svcSelector[k] = v
-		}
-		svc, err := k8s.UpsertService(nsName, form.Service, svcLabels, svcSelector, form.Marshal(), ports)
-		if err != nil {
-			errMsg :=
-				fmt.Sprintf("error while creating kubernetes service: %s/%s:%s, %v", nsName, form.GithubRepo, form.GitBranch, err)
-			logger.Error(errMsg)
-			return echo.NewHTTPError(http.StatusServiceUnavailable, errMsg)
-		}
-
-		return c.Redirect(http.StatusFound,
-			fmt.Sprintf("/namespaces/%s/services/%s", nsName, svc.Name))
-
-	case "dockerimage":
-		// TODO: create service here...
-		return echo.NewHTTPError(http.StatusNotImplemented, "Not Implemented")
-	default:
-		return echo.NewHTTPError(http.StatusNotImplemented, "Not Implemented")
+	githubClient := models.NewGitHub(token)
+	repo, err := githubClient.GetRepo(form.GithubOrg, form.GithubRepo)
+	if err != nil {
+		errMsg := fmt.Sprintf("Failed to get repository metadata from github %s/%s: %v", form.GithubOrg, form.GithubRepo, err)
+		return onError(errMsg)
 	}
+
+	// check if user has push permission on repository
+	if perm, ok := (*repo.Permissions)["push"]; !ok || !perm {
+		errMsg := fmt.Sprintf("You don't have push permission on %s/%s.", form.GithubOrg, form.GithubRepo)
+		return onError(errMsg)
+	}
+
+	// check if Dockerfile exists in repository
+	hasDockerfile, err := githubClient.CheckDockerfile(form.GithubOrg, form.GithubRepo)
+	if err != nil {
+		errMsg := fmt.Sprintf("Failed to check repository Dockerfile: %v", err)
+		return onError(errMsg)
+	}
+	if !hasDockerfile {
+		errMsg := fmt.Sprintf("Your repository %s/%s doesn't have /Dockerfile on any branch. Please create one",
+			form.GithubOrg, form.GithubRepo)
+		return onError(errMsg)
+	}
+
+	// ensure github hook
+	err = githubClient.UpsertHook(form.GithubOrg, form.GithubRepo)
+	if err != nil {
+		errMsg := fmt.Sprintf("Failed to create github hook on %s/%s: %v", form.GithubOrg, form.GithubRepo, err)
+		return onError(errMsg)
+	}
+
+	// ensure github collaborator
+	err = githubClient.AddCollaborator(form.GithubOrg, form.GithubRepo, models.Conf.GitHub.Username)
+	if err != nil {
+		errMsg := fmt.Sprintf("Failed to add github collaborator %s on %s/%s: %v",
+			models.Conf.GitHub.Username, form.GithubOrg, form.GithubRepo, err)
+		return onError(errMsg)
+	}
+
+	// upsert k8s service
+	svcLabels := k8s.GetLabels(form.GithubRepo, form.GitBranch)
+	svcSelector := make(map[string]string)
+	for k, v := range svcLabels {
+		svcSelector[k] = v
+	}
+	svc, err := k8s.UpsertService(nsName, form.Service, svcLabels, svcSelector, form.Marshal(), ports)
+	if err != nil {
+		errMsg :=
+			fmt.Sprintf("error while creating kubernetes service: %s/%s:%s, %v", nsName, form.GithubRepo, form.GitBranch, err)
+		logger.Error(errMsg)
+		return echo.NewHTTPError(http.StatusServiceUnavailable, errMsg)
+	}
+
+	return c.Redirect(http.StatusFound,
+		fmt.Sprintf("/namespaces/%s/services/%s", nsName, svc.Name))
 }
 
 func DeleteService(c echo.Context) error {
@@ -575,33 +566,16 @@ func GetServiceSettings(c echo.Context) error {
 	svcName := c.Param("service")
 	form := new(models.Metadata)
 
-	svc, meta, err := k8s.GetService(nsName, svcName)
+	_, meta, err := k8s.GetService(nsName, svcName)
 	if err != nil {
 		errMsg := fmt.Sprintf("error while getting service from kubernetes %s/%s: %v", nsName, svcName, err)
 		logger.Error(errMsg)
 		return echo.NewHTTPError(http.StatusInternalServerError, errMsg)
 	}
 
-	source, ok := svc.Annotations["source"]
-	if !ok || source == "" {
-		source = "github"
-	}
-	form.Source = source
-
-	switch source {
-	case "github":
-		form = meta
-		form.Source = source
-		form.Namespace = nsName
-		form.Service = svcName
-
-	case "dockerimage":
-		imageName := c.QueryParam("image_name")
-		imageTag := c.QueryParam("image_tag")
-		logger.Info(fmt.Sprintf("image name:%s, tag:%s", imageName, imageTag))
-		form.ImageName = imageName
-		form.ImageTag = imageTag
-	}
+	form = meta
+	form.Namespace = nsName
+	form.Service = svcName
 
 	return c.Render(http.StatusOK, "settings",
 		map[string]interface{}{

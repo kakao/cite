@@ -6,11 +6,9 @@
   h3 Edit Service
 
   form.form-horizontal action=/namespaces/{{.form.Namespace}}/services/{{.form.Service}}/settings method=post
-    input type=hidden name=source value={{.form.Source}}
     input type=hidden name=namespace value={{.form.Namespace}}
     input type=hidden name=service value={{.form.Service}}
 
-    {{if eq .form.Source "github"}}
     .form-group
       label.col-sm-2.control-label for=inputGitHub
         a href={{$.conf.GitHub.Host}} target=_blank GitHub
@@ -24,7 +22,7 @@
     input type=hidden name=container_port value={{.form.ContainerPort}}
     input type=hidden name=http_port value={{.form.HTTPPort}}
     input type=hidden name=tcp_port value={{.form.TCPPort}}
-
+    
     = include _meta_common .
 
     .form-group
@@ -43,37 +41,6 @@
 
     .form-group
       .col-sm-offset-2.col-sm-10
-        button#githubSubmitBtn.btn.btn-primary type=submit Submit
-        span style="padding-right:10px"
+        button#githubSubmitBtn.btn.btn-primary style="margin-right:10px" type=submit Submit
         button.btn.btn-default type=reset Reset
-        p.help-block press ReDeploy button to ensure new settings on running containers.
-
-    {{else if eq .form.Source "dockerimage"}}
-    .form-group
-      h1 TODO...
-
-    .form-group
-      label.col-sm-2.control-label Image Name
-      .col-sm-10
-        .form-inline
-          input#inputImageName.form-control style="width:80%" name=image_name placeholder="search docker image. ex) mysql" value={{.form.ImageName}}
-          button#imageSearchBtn.btn.btn-primary Search
-
-    .form-group
-      label.col-sm-2.control-label Image Tag
-      .col-sm-10
-        select#inputImageTag.form-control name=image_tag
-          option value='' --- select image tag ---
-
-    = include _meta_common .
-
-    = include _meta_envvar .
-
-    = include _meta_volume .
-
-    .form-group
-      .col-sm-offset-2.col-sm-10
-        button#imageSubmitBtn.btn.btn-primary type=submit disabled=disabled Submit
-        span style="padding-right:10px"
-        button.btn.btn-default type=reset Reset
-    {{end}}
+        p.help-block press ReDeploy to apply new settings.
