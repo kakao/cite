@@ -253,11 +253,10 @@ func GetBuildbot(c echo.Context) error {
 }
 
 func PostBuildbot(c echo.Context) error {
-	owner := "niko-bellic"
+	owner := "code0x9"
 	repo := "helloworld"
 	branch := "develop"
-	sha := "e52440a4e8b511a2d9a998e1048f56191911e322"
-	//sha := "f3243d881a01ca096550ab8b9cbe98b21b02b891"
+	sha := "b2c295f7ea3c5cf79de51c5f57b9eeb71a493e25"
 
 	bb := models.NewBuildBot()
 	err = bb.Build(owner, repo, branch, sha)
