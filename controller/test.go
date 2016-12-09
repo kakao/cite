@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
@@ -171,6 +172,16 @@ func GetGithubHookPatch(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, "OK")
+}
+
+func PostGithubHookProxy(c echo.Context) error {
+	buildbot := models.NewBuildBot()
+	reqHeader := make(map[string]string)
+	for _, key := range c.Request().Header().Keys() {
+		reqHeader[key] = c.Request().Header().Get(key)
+	}
+
+	return buildbot.Proxy(c.Request().Method(), reqHeader, c.Request().Body())
 }
 
 func PostGithubCollaborator(c echo.Context) error {

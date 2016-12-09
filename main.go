@@ -96,6 +96,7 @@ func main() {
 		test.GET("/github/hook", controller.GetGithubHook)
 		test.POST("/github/hook", controller.PostGithubHook)
 		test.GET("/github/hook_patch", controller.GetGithubHookPatch)
+		test.POST("/github/hook_proxy", controller.PostGithubHookProxy)
 		test.POST("/github/collaborator", controller.PostGithubCollaborator)
 		test.GET("/config", controller.GetConfig)
 		test.GET(`/route/a`, controller.GetRouteA)

@@ -7,9 +7,9 @@ import (
 	"net/http"
 
 	githubClient "github.com/google/go-github/github"
-	"github.com/labstack/echo"
 	"github.com/kakao/cite/goroutines"
 	"github.com/kakao/cite/models"
+	"github.com/labstack/echo"
 )
 
 func PostGithubCallback(c echo.Context) error {
@@ -18,6 +18,14 @@ func PostGithubCallback(c echo.Context) error {
 	var body = clearJSONRepoOrgField(c.Request().Body())
 
 	switch githubEvent {
+	case "push":
+		reqHeader := make(map[string]string)
+		for _, key := range c.Request().Header().Keys() {
+			reqHeader[key] = c.Request().Header().Get(key)
+		}
+
+		return buildbotClient.Proxy(c.Request().Method(), reqHeader, c.Request().Body())
+
 	case "status":
 		var event githubClient.StatusEvent
 		if err := json.Unmarshal(body, &event); err != nil {

@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -146,6 +147,28 @@ func (b *BuildBot) Build(owner, repo, branch, sha string) error {
 		err := fmt.Errorf("failed to send 'cite' event to buildbot: %s", respBody)
 		log.Printf(err.Error())
 		return err
+	}
+	return nil
+}
+
+func (b *BuildBot) Proxy(method string, header map[string]string, body io.Reader) error {
+	req, err := http.NewRequest(method, Conf.Buildbot.WebHook, body)
+	if err != nil {
+		return err
+	}
+	for k, v := range header {
+		req.Header.Set(k, v)
+	}
+
+	buildbotClient := http.DefaultClient
+	resp, err := buildbotClient.Do(req)
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode < 200 || resp.StatusCode > 399 {
+		respBody, _ := ioutil.ReadAll(resp.Body)
+		defer resp.Body.Close()
+		return fmt.Errorf("buildbot error. status:%v, body:%s", resp.Status, respBody)
 	}
 	return nil
 }
