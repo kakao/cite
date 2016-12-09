@@ -19,12 +19,12 @@ func PostGithubCallback(c echo.Context) error {
 
 	switch githubEvent {
 	case "push":
-		reqHeader := make(map[string]string)
+		header := make(map[string]string)
 		for _, key := range c.Request().Header().Keys() {
-			reqHeader[key] = c.Request().Header().Get(key)
+			header[key] = c.Request().Header().Get(key)
 		}
 
-		return buildbotClient.Proxy(c.Request().Method(), reqHeader, c.Request().Body())
+		return buildbotClient.Proxy(c.Request().Method(), header, body)
 
 	case "status":
 		var event githubClient.StatusEvent

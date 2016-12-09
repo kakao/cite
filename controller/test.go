@@ -181,7 +181,8 @@ func PostGithubHookProxy(c echo.Context) error {
 		reqHeader[key] = c.Request().Header().Get(key)
 	}
 
-	return buildbot.Proxy(c.Request().Method(), reqHeader, c.Request().Body())
+	reqBody, _ := ioutil.ReadAll(c.Request().Body())
+	return buildbot.Proxy(c.Request().Method(), reqHeader, reqBody)
 }
 
 func PostGithubCollaborator(c echo.Context) error {

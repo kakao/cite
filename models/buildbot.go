@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -151,10 +150,10 @@ func (b *BuildBot) Build(owner, repo, branch, sha string) error {
 	return nil
 }
 
-func (b *BuildBot) Proxy(method string, header map[string]string, body io.Reader) error {
-	req, err := http.NewRequest(method, Conf.Buildbot.WebHook, body)
+func (b *BuildBot) Proxy(method string, header map[string]string, body []byte) error {
+	req, err := http.NewRequest(method, Conf.Buildbot.WebHook, bytes.NewReader(body))
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create new proxy request: %v", err)
 	}
 	for k, v := range header {
 		req.Header.Set(k, v)
@@ -163,7 +162,7 @@ func (b *BuildBot) Proxy(method string, header map[string]string, body io.Reader
 	buildbotClient := http.DefaultClient
 	resp, err := buildbotClient.Do(req)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to send proxy request: %v", err)
 	}
 	if resp.StatusCode < 200 || resp.StatusCode > 399 {
 		respBody, _ := ioutil.ReadAll(resp.Body)
