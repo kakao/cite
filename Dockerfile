@@ -1,6 +1,6 @@
 FROM golang:1.6
 
-MAINTAINER Mark Lee <code0x9@gmail.com>
+MAINTAINER Seung Lee <code0x9@gmail.com>
 
 ENV TZ Asia/Seoul
 

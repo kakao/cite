@@ -264,6 +264,15 @@ func GetBuildbot(c echo.Context) error {
 	return c.String(http.StatusOK, log)
 }
 
+func GetNotifier(c echo.Context) error {
+	noti := models.NewNotifier()
+	err = noti.Send("code0x9", "develop-helloworld", "testing....")
+	if err != nil {
+		return err
+	}
+	return c.String(http.StatusOK, "SENT!")
+}
+
 func PostBuildbot(c echo.Context) error {
 	owner := "code0x9"
 	repo := "helloworld"

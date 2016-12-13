@@ -123,6 +123,7 @@ func main() {
 		test.GET("/session_unset", controller.DeleteSession)
 		test.GET("/submit", controller.GetFormSubmit)
 		test.POST("/submit", controller.PostFormSubmit)
+		test.Get("/noti", controller.GetNotifier)
 	}
 
 	// start server
