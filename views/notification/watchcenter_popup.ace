@@ -18,7 +18,7 @@
         {{else}}
         tr
           td colspan=3
-            p.text-warning No watchcenter group found. Please join existing group or create one on <a href="https://noti.daumkakao.io" target="_blank">Watchcenter</a>
+            p.text-warning No watchcenter group found. Please join existing group or create one on Watchcenter.
         {{end}}
 
 = content script
