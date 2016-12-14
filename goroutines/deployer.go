@@ -1,7 +1,6 @@
 package goroutines
 
 import (
-	"encoding/json"
 	"fmt"
 	"strconv"
 	"sync"
@@ -157,14 +156,15 @@ func (this *Deployer) Deploy(meta *models.Metadata, sha string, imageName string
 		return
 	}
 
-	lbMeta := make(map[string]interface{})
-	if lbMetaStr, ok := svc.Annotations["loadbalancer"]; ok {
-		if err := json.Unmarshal([]byte(lbMetaStr), &lbMeta); err != nil {
-			logger.Infof("failed to unmarshal service annotation 'loadbalancer' on %s/%s: %v", svc.Namespace, svc.Name, err)
-		}
-	}
+	// lbMeta := make(map[string]interface{})
+	// if lbMetaStr, ok := svc.Annotations["loadbalancer"]; ok {
+	// 	if err := json.Unmarshal([]byte(lbMetaStr), &lbMeta); err != nil {
+	// 		logger.Infof("failed to unmarshal service annotation 'loadbalancer' on %s/%s: %v", svc.Namespace, svc.Name, err)
+	// 	}
+	// }
 
-	msg = fmt.Sprintf(`deploy success: https://%s`, lbMeta["domain"])
+	// msg = fmt.Sprintf(`deploy success: https://%s`, lbMeta["domain"])
+	msg = fmt.Sprintf(`deploy success`)
 	logger.Debug(msg)
 	this.noti.SendWithFallback(meta.Notification, meta.Watchcenter, msg)
 	fluentLogger.Info(msg)
