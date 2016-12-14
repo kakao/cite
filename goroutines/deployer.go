@@ -140,7 +140,7 @@ func (this *Deployer) Deploy(meta *models.Metadata, sha string, imageName string
 	svcSelector["deploy_id"] = strconv.Itoa(deployID)
 
 	// upsert k8s service
-	svc, err := this.k8s.UpsertService(
+	_, err = this.k8s.UpsertService(
 		nsName,
 		meta.Service,
 		svcLabels,
