@@ -5,8 +5,8 @@
     "type": "git",
     "url": "https://github.com/kakao/cite.git"
   },
-  "author": "Niko Bellic <niko.bellic@kakaocorp.com>",
-  "license": "AGPL-3.0",
+  "author": "Seung Lee <code0x9@gmail.com>",
+  "license": "Apache-2.0",
   "dependencies": {
     "backbone": "^1.2.3",
     "bootstrap": "^3.3.6",
