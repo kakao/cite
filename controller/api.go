@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/labstack/echo"
 	"github.com/kakao/cite/models"
+	"github.com/labstack/echo"
 	k8sApi "k8s.io/kubernetes/pkg/api"
 	k8sLabels "k8s.io/kubernetes/pkg/labels"
 )
@@ -117,7 +117,7 @@ func GetGarbageCollection(c echo.Context) error {
 			}
 			msg := fmt.Sprintf("%s\n%s", msgHead, strings.Join(rcList, "\n"))
 
-			watchcenter.SendGroupTalk(2105, msg)
+			noti.SendSystem(msg)
 		}
 	}()
 

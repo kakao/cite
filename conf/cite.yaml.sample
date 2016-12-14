@@ -51,3 +51,5 @@ Notification:
     RedirectURI: "/v1/notification/slack"
   Watchcenter:
     API: "http://[watchcenter url]"
+  Default:
+    Slack: [slack incoming webhook url]

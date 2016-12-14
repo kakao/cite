@@ -13,6 +13,7 @@ type Deployer struct {
 	docker *models.Docker
 	github *models.GitHub
 	k8s    *models.Kubernetes
+	noti   *models.Notifier
 	util   *models.Util
 	wc     *models.WatchCenter
 }
@@ -28,6 +29,7 @@ func NewDeployer() *Deployer {
 			docker: models.NewDocker(),
 			github: models.NewCommonGitHub(),
 			k8s:    models.NewKubernetes(),
+			noti:   models.NewNotifier(),
 			util:   models.NewUtil(),
 			wc:     models.NewWatchCenter(),
 		}
@@ -48,7 +50,7 @@ func (this *Deployer) Deploy(meta *models.Metadata, sha string, imageName string
 				"error while create deployments to github:%s/%s/%s: %v",
 				meta.GithubOrg, meta.GithubRepo, meta.GitBranch, err)
 			logger.Error(errMsg)
-			this.wc.SendGroupTalk(meta.Watchcenter, errMsg)
+			this.noti.SendWithFallback(meta.Notification, meta.Watchcenter, msg)
 			return
 		}
 	}
@@ -70,7 +72,7 @@ func (this *Deployer) Deploy(meta *models.Metadata, sha string, imageName string
 
 	if len(imageName) == 0 {
 		msg = fmt.Sprintf(`invalid docker image name: "%s"`, imageName)
-		this.wc.SendGroupTalk(meta.Watchcenter, msg)
+		this.noti.SendWithFallback(meta.Notification, meta.Watchcenter, msg)
 		fluentLogger.Info(msg)
 		return
 	}
@@ -81,7 +83,7 @@ func (this *Deployer) Deploy(meta *models.Metadata, sha string, imageName string
 		meta.GithubRepo,
 		meta.GitBranch,
 		sha)
-	this.wc.SendGroupTalk(meta.Watchcenter, msg)
+	this.noti.SendWithFallback(meta.Notification, meta.Watchcenter, msg)
 	fluentLogger.Info(msg)
 
 	baseLabels := this.k8s.GetLabels(meta.GithubRepo, meta.GitBranch)
@@ -121,7 +123,7 @@ func (this *Deployer) Deploy(meta *models.Metadata, sha string, imageName string
 	); err != nil {
 		logger.Error("error on upsert k8s ReplicationController :", err)
 		msg = fmt.Sprintf("deploy failed: %v", err)
-		this.wc.SendGroupTalk(meta.Watchcenter, msg)
+		this.noti.SendWithFallback(meta.Notification, meta.Watchcenter, msg)
 		fluentLogger.Info(msg)
 		return
 	}
@@ -150,7 +152,7 @@ func (this *Deployer) Deploy(meta *models.Metadata, sha string, imageName string
 	if err != nil {
 		logger.Error("error on upsert k8s Service :", err)
 		msg = fmt.Sprintf("deploy failed: %v", err)
-		this.wc.SendGroupTalk(meta.Watchcenter, msg)
+		this.noti.SendWithFallback(meta.Notification, meta.Watchcenter, msg)
 		fluentLogger.Info(msg)
 		return
 	}
@@ -164,7 +166,7 @@ func (this *Deployer) Deploy(meta *models.Metadata, sha string, imageName string
 
 	msg = fmt.Sprintf(`deploy success: https://%s`, lbMeta["domain"])
 	logger.Debug(msg)
-	this.wc.SendGroupTalk(meta.Watchcenter, msg)
+	this.noti.SendWithFallback(meta.Notification, meta.Watchcenter, msg)
 	fluentLogger.Info(msg)
 
 	deploymentState = "success"

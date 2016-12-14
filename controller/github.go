@@ -98,7 +98,7 @@ func PostGithubCallback(c echo.Context) error {
 		case "pending":
 			msg := fmt.Sprintf(`build started: %s/%s/%s:%s
 * buildbot url: %s`, ownerName, repoName, branchName, *event.SHA, *event.TargetURL)
-			watchcenter.SendGroupTalk(meta.Watchcenter, msg)
+			noti.SendWithFallback(meta.Notification, meta.Watchcenter, msg)
 			return c.String(http.StatusOK, "status/pending event received")
 		case "success":
 			imageName, err := buildbotClient.GetImageName(*event.Description)
@@ -108,7 +108,7 @@ func PostGithubCallback(c echo.Context) error {
 			}
 
 			msg := fmt.Sprintf("build success. image name: %s", imageName)
-			watchcenter.SendGroupTalk(meta.Watchcenter, msg)
+			noti.SendWithFallback(meta.Notification, meta.Watchcenter, msg)
 
 			if meta.AutoDeploy {
 				deployer := goroutines.NewDeployer()
@@ -133,7 +133,7 @@ func PostGithubCallback(c echo.Context) error {
 * buildbot url: %s
 * lastlog
 %s`, *event.TargetURL, logContent)
-			watchcenter.SendGroupTalk(meta.Watchcenter, msg)
+			noti.SendWithFallback(meta.Notification, meta.Watchcenter, msg)
 			return c.String(http.StatusOK, "status/failure event received")
 		default:
 			errMsg := fmt.Sprintf("unknown status: %v", event.State)

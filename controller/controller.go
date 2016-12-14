@@ -25,6 +25,7 @@ var (
 	docker         = models.NewDocker()
 	commonGitHub   = models.NewCommonGitHub()
 	GMT, _         = time.LoadLocation("GMT")
+	noti           = models.NewNotifier()
 	watchcenter    = models.NewWatchCenter()
 
 	sessionStore = sessions.NewCookieStore([]byte("1VMo28DykUsIM1L8"))

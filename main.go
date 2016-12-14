@@ -124,6 +124,7 @@ func main() {
 		test.GET("/submit", controller.GetFormSubmit)
 		test.POST("/submit", controller.PostFormSubmit)
 		test.Get("/noti", controller.GetNotifier)
+		test.Get("/noti_system", controller.GetSystemNotifier)
 	}
 
 	// start server

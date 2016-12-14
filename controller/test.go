@@ -266,11 +266,25 @@ func GetBuildbot(c echo.Context) error {
 
 func GetNotifier(c echo.Context) error {
 	noti := models.NewNotifier()
-	err = noti.Send("code0x9", "develop-helloworld", "testing....")
+	_, meta, err := k8s.GetService("code0x9", "develop-helloworld")
+	if err != nil {
+		return err
+	}
+
+	err = noti.Send(meta.Notification, "testing....")
 	if err != nil {
 		return err
 	}
 	return c.String(http.StatusOK, "SENT!")
+}
+
+func GetSystemNotifier(c echo.Context) error {
+	noti := models.NewNotifier()
+	err = noti.SendSystem("testing system message....")
+	if err != nil {
+		return err
+	}
+	return c.String(http.StatusOK, "System Message SENT!")
 }
 
 func PostBuildbot(c echo.Context) error {

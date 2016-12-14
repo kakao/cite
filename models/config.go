@@ -69,6 +69,9 @@ type Config struct {
 			ClientSecret string
 			RedirectURI  string
 		}
+		Default struct {
+			Slack string
+		}
 	}
 }
 
