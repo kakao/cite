@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	githubClient "github.com/google/go-github/github"
 	"github.com/kakao/cite/goroutines"
@@ -19,6 +20,22 @@ func PostGithubCallback(c echo.Context) error {
 
 	switch githubEvent {
 	case "push":
+		// check if pushed repo/branch is registered to cite
+		var event githubClient.PushEvent
+		if err := json.Unmarshal(body, &event); err != nil {
+			errMsg := fmt.Sprintf("error while unmarshalling event:%v, %v", body, err)
+			logger.Error(errMsg)
+			return echo.NewHTTPError(http.StatusBadRequest, errMsg)
+		}
+		nsName := util.NormalizeByHyphen("", *event.Repo.Owner.Name)
+		refs := strings.Split(*event.Ref, "/")
+		branch := refs[len(refs)-1]
+		svcLabels := k8s.GetLabels(*event.Repo.Name, branch)
+		svcs, err := k8s.GetServices(nsName, svcLabels)
+		if err != nil || len(svcs) == 0 {
+			return echo.NewHTTPError(http.StatusNotFound, "service not found")
+		}
+
 		header := make(map[string]string)
 		for _, key := range c.Request().Header().Keys() {
 			header[key] = c.Request().Header().Get(key)
