@@ -33,7 +33,7 @@ func PostGithubCallback(c echo.Context) error {
 		svcLabels := k8s.GetLabels(*event.Repo.Name, branch)
 		svcs, err := k8s.GetServices(nsName, svcLabels)
 		if err != nil || len(svcs) == 0 {
-			return echo.NewHTTPError(http.StatusNotFound, "service not found")
+			return echo.NewHTTPError(http.StatusNotFound, "service not found. owner:%s, repo:%s, branch:%s", *event.Repo.Owner.Name, *event.Repo.Name, branch)
 		}
 
 		header := make(map[string]string)
