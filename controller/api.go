@@ -55,7 +55,9 @@ func GetGarbageCollection(c echo.Context) error {
 		// testNs, _ := k8s.GetNamespace("test")
 		// nss = []k8sApi.Namespace{*testNs}
 		if err != nil {
-			logger.Errorf("failed to list namespaces: %v", err)
+			msg := fmt.Sprintf("failed to list namespaces: %v", err)
+			logger.Errorf(msg)
+			noti.SendSystem(msg)
 			return
 		}
 		for _, ns := range nss {
@@ -67,7 +69,9 @@ func GetGarbageCollection(c echo.Context) error {
 			// get all RCs
 			rcs, err := k8s.GetReplicationControllers(ns.Name, map[string]string{})
 			if err != nil {
-				logger.Errorf("failed to list replication controllers on namespace %s: %v", ns.Name, err)
+				msg := fmt.Sprintf("failed to list replication controllers on namespace %s: %v", ns.Name, err)
+				logger.Errorf(msg)
+				noti.SendSystem(msg)
 				return
 			}
 
@@ -83,7 +87,9 @@ func GetGarbageCollection(c echo.Context) error {
 			// get all SVCs
 			svcs, err := k8s.GetServices(ns.Name, map[string]string{})
 			if err != nil {
-				logger.Errorf("failed to list service on namespace %s: %v", ns.Name, err)
+				msg := fmt.Sprintf("failed to list service on namespace %s: %v", ns.Name, err)
+				logger.Errorf(msg)
+				noti.SendSystem(msg)
 				return
 			}
 
@@ -103,7 +109,9 @@ func GetGarbageCollection(c echo.Context) error {
 				if !dryrun {
 					err = k8s.DeleteReplicationController(rc.Namespace, rc.Name)
 					if err != nil {
-						logger.Errorf("failed to delete RC %s/%s: %v", rc.Namespace, rc.Name, err)
+						msg := fmt.Sprintf("failed to delete RC %s/%s: %v", rc.Namespace, rc.Name, err)
+						logger.Errorf(msg)
+						noti.SendSystem(msg)
 						return
 					}
 				}
