@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: buildbot
+  name: buildbot
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: buildbot
+  template:
+    metadata:
+      labels:
+        k8s-app: buildbot
+    spec:
+      containers:
+      - name: buildbot
+        image: kakao/cite-build:latest
+        env:
+        - name: CONFIG_PATH
+          value: /etc/buildbot/build.conf
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/buildbot
+        ports:
+        - name: http
+          containerPort: 8010
+        - name: pb
+          containerPort: 9989
+      volumes:
+        - name: config-volume
+          configMap:
+            name: buildbot-config
