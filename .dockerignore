@@ -1,7 +1,8 @@
-/.git
-/cite
-/lastupdate.tmp
-/swagger*
+.git
+conf
+cite
+lastupdate.tmp
+swagger*
 
 *.exe
 *.test

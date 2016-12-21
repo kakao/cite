@@ -76,7 +76,16 @@ type Config struct {
 }
 
 func init() {
-	viper.SetConfigFile("conf/cite.yaml")
+	for _, path := range []string{
+		"conf/cite.yaml",
+		"/etc/conf/cite.yaml",
+	} {
+		if _, err := os.Stat(path); err == nil {
+			viper.SetConfigFile(path)
+			break
+		}
+	}
+
 	err = viper.ReadInConfig()
 	if err != nil {
 		logger.Panic(err)
