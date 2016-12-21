@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: buildbot
-        image: kakao/cite-build:latest
+        image: kakaocorp/cite-build:latest
         env:
         - name: CONFIG_PATH
           value: /etc/buildbot/build.conf

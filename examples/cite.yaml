@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: cite
-        image: kakao/cite:latest
+        image: kakaocorp/cite:latest
         env:
         - name: CONFIG_PATH
           value: /etc/cite/build.conf
