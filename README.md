@@ -27,3 +27,4 @@ Library dependencies on /static/node_modules and /vendor is not modified and exi
 * ace : https://github.com/yosssi/ace
   * ace syntax : https://github.com/yosssi/ace/blob/master/documentation/syntax.md
 * font awesome : http://fortawesome.github.io/Font-Awesome/icons/
+
