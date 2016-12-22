@@ -1,5 +1,5 @@
 ## About
-cite main server.
+cite main server
 
 ### install bra(Brilliant Ridiculous Assistant)
 ```
