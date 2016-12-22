@@ -12,7 +12,6 @@ import (
 	"github.com/gorilla/schema"
 	"github.com/kakao/cite/models"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
 )
 
 func GetSession(c echo.Context) error {
@@ -176,13 +175,8 @@ func GetGithubHookPatch(c echo.Context) error {
 
 func PostGithubHookProxy(c echo.Context) error {
 	buildbot := models.NewBuildBot()
-	reqHeader := make(map[string]string)
-	for _, key := range c.Request().Header().Keys() {
-		reqHeader[key] = c.Request().Header().Get(key)
-	}
-
-	reqBody, _ := ioutil.ReadAll(c.Request().Body())
-	return buildbot.Proxy(c.Request().Method(), reqHeader, reqBody)
+	reqBody, _ := ioutil.ReadAll(c.Request().Body)
+	return buildbot.Proxy(c.Request().Method, c.Request().Header, reqBody)
 }
 
 func PostGithubCollaborator(c echo.Context) error {
@@ -467,7 +461,7 @@ func PostFormSubmit(c echo.Context) error {
 		Cc string `schema:"cc" json:"cc"`
 	}
 
-	req := c.Request().(*standard.Request).Request
+	req := c.Request()
 	if err := req.ParseForm(); err != nil {
 		logger.Error("failed to parse form: %v", err)
 		return c.Render(http.StatusOK, "test", map[string]interface{}{})

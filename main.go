@@ -1,16 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/kakao/cite/controller"
 	"github.com/kakao/cite/models"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
 	"github.com/labstack/echo/middleware"
-	"github.com/tylerb/graceful"
 )
 
 func main() {
@@ -18,12 +14,12 @@ func main() {
 	e := echo.New()
 
 	// error handler
-	e.SetHTTPErrorHandler(func(err error, c echo.Context) {
+	e.HTTPErrorHandler = func(err error, c echo.Context) {
 		if _, ok := err.(*echo.HTTPError); !ok {
 			err = echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 		e.DefaultHTTPErrorHandler(err, c)
-	})
+	}
 
 	// middleware
 	e.Pre(middleware.RemoveTrailingSlash())
@@ -32,13 +28,13 @@ func main() {
 	}))
 	e.Use(middleware.Recover())
 	e.Use(middleware.Gzip())
-
+	e.Use()
 	// static resources
 	e.Static("/static", "static")
 	e.File("/favicon.ico", "static/favicon.ico")
 
 	// set ace renderer
-	e.SetRenderer(controller.AceRenderer{})
+	e.Renderer = controller.AceRenderer{}
 
 	// routes
 	api := e.Group("/v1")
@@ -123,17 +119,10 @@ func main() {
 		test.GET("/session_unset", controller.DeleteSession)
 		test.GET("/submit", controller.GetFormSubmit)
 		test.POST("/submit", controller.PostFormSubmit)
-		test.Get("/noti", controller.GetNotifier)
-		test.Get("/noti_system", controller.GetSystemNotifier)
+		test.GET("/noti", controller.GetNotifier)
+		test.GET("/noti_system", controller.GetSystemNotifier)
 	}
 
 	// start server
-	std := standard.New(models.Conf.Cite.ListenPort)
-	fmt.Printf("server started. listen address: %v\n", models.Conf.Cite.ListenPort)
-	if models.Conf.Cite.Version == "DEV" {
-		e.Run(std)
-	} else {
-		std.SetHandler(e)
-		graceful.ListenAndServe(std.Server, 20*time.Second)
-	}
+	e.Logger.Fatal(e.Start(models.Conf.Cite.ListenPort))
 }

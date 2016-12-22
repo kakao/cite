@@ -10,7 +10,6 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/kakao/cite/models"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
 	gologging "github.com/op/go-logging"
 )
 
@@ -42,7 +41,7 @@ func init() {
 }
 
 func getSession(c echo.Context) *sessions.Session {
-	session, err := sessionStore.Get(c.Request().(*standard.Request).Request, models.Conf.Cite.Version)
+	session, err := sessionStore.Get(c.Request(), models.Conf.Cite.Version)
 	if err != nil {
 		logger.Error("failed to get session")
 	}
@@ -51,8 +50,8 @@ func getSession(c echo.Context) *sessions.Session {
 
 func saveSession(session *sessions.Session, c echo.Context) error {
 	err = session.Save(
-		c.Request().(*standard.Request).Request,
-		c.Response().(*standard.Response).ResponseWriter)
+		c.Request(),
+		c.Response().Writer)
 	if err != nil {
 		logger.Errorf("failed to save session: %v", err)
 		return err
@@ -82,7 +81,7 @@ func AuthWeb(next echo.HandlerFunc) echo.HandlerFunc {
 		session := getSession(c)
 		_, ok := session.Values["token"]
 		if !ok {
-			session.Values["redirectPath"] = c.Request().URI()
+			session.Values["redirectPath"] = c.Path()
 			saveSession(session, c)
 			return c.Redirect(http.StatusFound, "/login")
 		}

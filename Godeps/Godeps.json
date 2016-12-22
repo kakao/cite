@@ -1,7 +1,7 @@
 {
 	"ImportPath": "github.com/kakao/cite",
 	"GoVersion": "go1.7",
-	"GodepVersion": "v74",
+	"GodepVersion": "v75",
 	"Deps": [
 		{
 			"ImportPath": "github.com/BurntSushi/toml",
@@ -78,8 +78,8 @@
 		},
 		{
 			"ImportPath": "github.com/dgrijalva/jwt-go",
-			"Comment": "v2.2.0-23-g5ca8014",
-			"Rev": "5ca80149b9d3f8b863af0e2bb6742e608603bd99"
+			"Comment": "v3.0.0-10-g9ed569b",
+			"Rev": "9ed569b5d1ac936e6494082958d63a6aa4fff99a"
 		},
 		{
 			"ImportPath": "github.com/docker/distribution/digest",
@@ -165,6 +165,10 @@
 			"Rev": "aed02d124ae4a0e94fea4541c8effd05bf0c8296"
 		},
 		{
+			"ImportPath": "github.com/gorilla/schema",
+			"Rev": "0164a00ab4cd01d814d8cd5bf63fd9fcea30e23b"
+		},
+		{
 			"ImportPath": "github.com/gorilla/securecookie",
 			"Comment": "v1.1-2-gff35634",
 			"Rev": "ff356348f74133a59d3e93aa24b5b4551b6fe90d"
@@ -219,43 +223,28 @@
 		},
 		{
 			"ImportPath": "github.com/labstack/echo",
-			"Comment": "v2.0.2",
-			"Rev": "fbcdf70c52c155ae9aa58e72ee0532fa2f1cad2e"
-		},
-		{
-			"ImportPath": "github.com/labstack/echo/engine",
-			"Comment": "v2.0.2",
-			"Rev": "fbcdf70c52c155ae9aa58e72ee0532fa2f1cad2e"
-		},
-		{
-			"ImportPath": "github.com/labstack/echo/engine/standard",
-			"Comment": "v2.0.2",
-			"Rev": "fbcdf70c52c155ae9aa58e72ee0532fa2f1cad2e"
-		},
-		{
-			"ImportPath": "github.com/labstack/echo/log",
-			"Comment": "v2.0.2",
-			"Rev": "fbcdf70c52c155ae9aa58e72ee0532fa2f1cad2e"
+			"Comment": "v3.0.3-25-g869cdcd",
+			"Rev": "869cdcd19af7797cdbaa56e0555cae05bfa3dea8"
 		},
 		{
 			"ImportPath": "github.com/labstack/echo/middleware",
-			"Comment": "v2.0.2",
-			"Rev": "fbcdf70c52c155ae9aa58e72ee0532fa2f1cad2e"
+			"Comment": "v3.0.3-25-g869cdcd",
+			"Rev": "869cdcd19af7797cdbaa56e0555cae05bfa3dea8"
 		},
 		{
 			"ImportPath": "github.com/labstack/gommon/bytes",
-			"Comment": "v0.0.3-54-g722aa12",
-			"Rev": "722aa12d41c236ce78ff48eac1cafe0107ecdc9d"
+			"Comment": "v0.1.0-3-g7355c05",
+			"Rev": "7355c05c868a92405473246663876efc0780ac18"
 		},
 		{
 			"ImportPath": "github.com/labstack/gommon/color",
-			"Comment": "v0.0.3-54-g722aa12",
-			"Rev": "722aa12d41c236ce78ff48eac1cafe0107ecdc9d"
+			"Comment": "v0.1.0-3-g7355c05",
+			"Rev": "7355c05c868a92405473246663876efc0780ac18"
 		},
 		{
-			"ImportPath": "github.com/labstack/gommon/log",
-			"Comment": "v0.0.3-54-g722aa12",
-			"Rev": "722aa12d41c236ce78ff48eac1cafe0107ecdc9d"
+			"ImportPath": "github.com/labstack/gommon/random",
+			"Comment": "v0.1.0-3-g7355c05",
+			"Rev": "7355c05c868a92405473246663876efc0780ac18"
 		},
 		{
 			"ImportPath": "github.com/magiconair/properties",
@@ -278,6 +267,11 @@
 		{
 			"ImportPath": "github.com/mitchellh/mapstructure",
 			"Rev": "d2dd0262208475919e1a362f675cfc0e7c10e905"
+		},
+		{
+			"ImportPath": "github.com/nlopes/slack",
+			"Comment": "v0.0.1-152-ge595e9d",
+			"Rev": "e595e9d8590a04ff76407e4e7d1791d25b095c66"
 		},
 		{
 			"ImportPath": "github.com/op/go-logging",
@@ -365,11 +359,6 @@
 			"Rev": "05e600edf28f1b907005ddf6b0488fe68b819971"
 		},
 		{
-			"ImportPath": "github.com/tylerb/graceful",
-			"Comment": "v1.2.7-2-g510b0c6",
-			"Rev": "510b0c61f38d9c43994a3fc85ae86465b04896a8"
-		},
-		{
 			"ImportPath": "github.com/ugorji/go/codec",
 			"Rev": "646ae4a518c1c3be0739df898118d9bccf993858"
 		},
@@ -399,7 +388,7 @@
 			"Rev": "7c71ca708c71bcbd0e6c856b01468ee07fe24557"
 		},
 		{
-			"ImportPath": "golang.org/x/net/netutil",
+			"ImportPath": "golang.org/x/net/websocket",
 			"Rev": "7c71ca708c71bcbd0e6c856b01468ee07fe24557"
 		},
 		{

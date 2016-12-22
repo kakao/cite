@@ -14,11 +14,14 @@ import (
 )
 
 func PostGithubCallback(c echo.Context) error {
-	githubEvent := c.Request().Header().Get("X-GitHub-Event")
+	githubEvent, ok := c.Request().Header["X-GitHub-Event"]
+	if !ok {
+		githubEvent = []string{"unknown"}
+	}
 	logger.Info("received github event:", githubEvent)
-	var body = clearJSONRepoOrgField(c.Request().Body())
+	var body = clearJSONRepoOrgField(c.Request().Body)
 
-	switch githubEvent {
+	switch githubEvent[0] {
 	case "push":
 		// check if pushed repo/branch is registered to cite
 		var event githubClient.PushEvent
@@ -36,12 +39,7 @@ func PostGithubCallback(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusNotFound, "service not found. owner:%s, repo:%s, branch:%s", *event.Repo.Owner.Name, *event.Repo.Name, branch)
 		}
 
-		header := make(map[string]string)
-		for _, key := range c.Request().Header().Keys() {
-			header[key] = c.Request().Header().Get(key)
-		}
-
-		return buildbotClient.Proxy(c.Request().Method(), header, body)
+		return buildbotClient.Proxy(c.Request().Method, c.Request().Header, body)
 
 	case "status":
 		var event githubClient.StatusEvent

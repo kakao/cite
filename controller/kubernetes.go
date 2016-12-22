@@ -12,7 +12,6 @@ import (
 	"github.com/kakao/cite/goroutines"
 	"github.com/kakao/cite/models"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
 	gologging "github.com/op/go-logging"
 	k8sApi "k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/labels"
@@ -110,20 +109,8 @@ func PostNewService(c echo.Context) error {
 			})
 	}
 
-	// monkey patch for checkbox value=on
-	fp := c.Request().FormParams()
-	if _, ok := fp["auto_deploy"]; ok {
-		fp["auto_deploy"] = []string{"true"}
-	}
-
-	req := c.Request().(*standard.Request).Request
-	if err := req.ParseForm(); err != nil {
+	if err := c.Bind(form); err != nil {
 		errMsg := fmt.Sprintf("error while parsing form %v, %v", form, err)
-		return onError(errMsg)
-	}
-
-	if err := formDecoder.Decode(form, req.PostForm); err != nil {
-		errMsg := fmt.Sprintf("error while decoding form %v, %v", form, err)
 		return onError(errMsg)
 	}
 
@@ -603,20 +590,8 @@ func PostServiceSettings(c echo.Context) error {
 			})
 	}
 
-	// monkey patch for checkbox value=on
-	fp := c.Request().FormParams()
-	if _, ok := fp["auto_deploy"]; ok {
-		fp["auto_deploy"] = []string{"true"}
-	}
-
-	req := c.Request().(*standard.Request).Request
-	if err := req.ParseForm(); err != nil {
+	if err := c.Bind(form); err != nil {
 		errMsg := fmt.Sprintf("error while parsing form %v, %v", form, err)
-		return onError(errMsg)
-	}
-
-	if err := formDecoder.Decode(form, req.PostForm); err != nil {
-		errMsg := fmt.Sprintf("error while decoding form %v, %v", form, err)
 		return onError(errMsg)
 	}
 

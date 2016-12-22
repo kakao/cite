@@ -12,11 +12,10 @@ import (
 func GetSlackOAuthToken(c echo.Context) error {
 	code := c.QueryParam("code")
 	if len(code) == 0 {
-		redirectURI := fmt.Sprintf("%s://%s%s", c.Request().Scheme(), c.Request().Host(), c.Request().URI())
 		// get oauth code
 		url := fmt.Sprintf("https://slack.com/oauth/authorize?scope=incoming-webhook,bot&client_id=%s&redirect_uri=%s",
 			models.Conf.Notification.Slack.ClientID,
-			redirectURI)
+			c.Request().URL.String())
 		return c.Redirect(http.StatusFound, url)
 	}
 
