@@ -2,9 +2,10 @@ package controller
 
 import (
 	"fmt"
-	"github.com/labstack/echo"
-	"github.com/kakao/cite/models"
 	"net/http"
+
+	"github.com/kakao/cite/models"
+	"github.com/labstack/echo"
 )
 
 func GetLogin(c echo.Context) error {
@@ -41,6 +42,7 @@ func GetGithubCallback(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, errMsg)
 	}
 	session.Values["userLogin"] = *user.Login
+	session.Values["userEmail"] = *user.Email
 	if user.Name != nil {
 		session.Values["userName"] = *user.Name
 	} else {

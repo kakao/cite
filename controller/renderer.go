@@ -10,9 +10,9 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/google/go-github/github"
+	"github.com/kakao/cite/models"
 	"github.com/labstack/echo"
 	"github.com/yosssi/ace"
-	"github.com/kakao/cite/models"
 	k8sApi "k8s.io/kubernetes/pkg/api"
 	k8sApiUnversioned "k8s.io/kubernetes/pkg/api/unversioned"
 )
@@ -56,6 +56,9 @@ func (a AceRenderer) Render(w io.Writer, name string, data interface{}, c echo.C
 			}
 			if userLogin, ok := session.Values["userLogin"]; ok {
 				dataMap["userLogin"] = userLogin
+			}
+			if userEmail, ok := session.Values["userEmail"]; ok {
+				dataMap["userEmail"] = userEmail
 			}
 			if flashes := session.Flashes(); len(flashes) > 0 {
 				dataMap["flashes"] = flashes
@@ -172,8 +175,8 @@ func kibanaAppLogURL(nsName, svcName, branchName string) string {
 	return es.GetAppLogURL(nsName, svcName, branchName)
 }
 
-func listWatchcenterGroups(username string) []models.WatchCenterGroup {
-	gs, err := watchcenter.ListGroups(username)
+func listWatchcenterGroups(username, email string) []models.WatchCenterGroup {
+	gs, err := watchcenter.ListGroups(username, email)
 	if err != nil {
 		logger.Info(err)
 		return []models.WatchCenterGroup{}

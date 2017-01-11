@@ -61,25 +61,31 @@ type WatchCenterGroup struct {
 	UnconditionalInvite bool   `json:"unconditionalInvite"`
 }
 
-func (this *WatchCenter) ListGroups(username string) ([]WatchCenterGroup, error) {
-	if strings.Index(username, "-") > -1 {
-		username = strings.Replace(username, "-", ".", 1)
-	}
-	wcURL := fmt.Sprintf(this.baseURL+ListGroups, username)
-	resp, err := http.Get(wcURL)
-	if err != nil {
-		return nil, err
-	}
-	respBody, _ := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
-
-	var wcResp WatchCenterGroupResponse
-	err = json.Unmarshal(respBody, &wcResp)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal watchcenter response: %v", err)
+func (this *WatchCenter) ListGroups(username, email string) ([]WatchCenterGroup, error) {
+	username = strings.Replace(username, "-", ".", 1)
+	if idx := strings.Index(email, "@"); idx > 0 {
+		email = email[0:idx]
 	}
 
-	return wcResp.Response, nil
+	for _, u := range []string{username, email} {
+		wcURL := fmt.Sprintf(this.baseURL+ListGroups, u)
+		resp, err := http.Get(wcURL)
+		if err != nil {
+			return nil, err
+		}
+		respBody, _ := ioutil.ReadAll(resp.Body)
+		defer resp.Body.Close()
+
+		var wcResp WatchCenterGroupResponse
+		err = json.Unmarshal(respBody, &wcResp)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal watchcenter response: %v", err)
+		}
+		if len(wcResp.Response) > 0 {
+			return wcResp.Response, nil
+		}
+	}
+	return nil, fmt.Errorf("watchcenter groups not found")
 }
 
 func (this *WatchCenter) SendGroupTalk(to int, msg string) {

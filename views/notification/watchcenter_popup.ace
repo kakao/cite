@@ -7,7 +7,7 @@
           th Name
           th Description
       tbody
-        {{range listWatchcenterGroups .userLogin}}
+        {{range listWatchcenterGroups .userLogin .userEmail}}
         tr
           td
             .radio style="margin:0px; padding-top:0px;"
