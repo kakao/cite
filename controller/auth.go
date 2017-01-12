@@ -42,7 +42,9 @@ func GetGithubCallback(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, errMsg)
 	}
 	session.Values["userLogin"] = *user.Login
-	session.Values["userEmail"] = *user.Email
+	if user.Email != nil {
+		session.Values["userEmail"] = *user.Email
+	}
 	if user.Name != nil {
 		session.Values["userName"] = *user.Name
 	} else {
