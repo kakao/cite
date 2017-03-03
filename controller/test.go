@@ -121,7 +121,7 @@ func PostGithubHook(c echo.Context) error {
 }
 
 func GetMetadata(c echo.Context) error {
-	srcStr := "{\"source\":\"github\",\"namespace\":\"\",\"service\":\"docker-9rum\",\"github_org\":\"niko-bellic\",\"github_repo\":\"9rum\",\"git_branch\":\"docker\",\"image_name\":\"\",\"image_tag\":\"\",\"auto_deploy\":true,\"http_port\":\"80, 8080, 4560, 4561\",\"tcp_port\":\"\",\"probe_path\":\"\",\"replicas\":2,\"watchcenter\":1047,\"environment\":\"## this is comment\\r\\n## usage : KEY=VALUE\\r\\nCITE_VERSION=DEV\"}"
+	srcStr := "{\"source\":\"github\",\"namespace\":\"\",\"service\":\"docker-test\",\"github_org\":\"niko-bellic\",\"github_repo\":\"test\",\"git_branch\":\"docker\",\"image_name\":\"\",\"image_tag\":\"\",\"auto_deploy\":true,\"http_port\":\"80, 8080, 4560, 4561\",\"tcp_port\":\"\",\"probe_path\":\"\",\"replicas\":2,\"watchcenter\":1047,\"environment\":\"## this is comment\\r\\n## usage : KEY=VALUE\\r\\nCITE_VERSION=DEV\"}"
 
 	meta, err := models.UnmarshalMetadata(srcStr)
 	if err != nil {
