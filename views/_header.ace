@@ -10,11 +10,6 @@ nav.navbar.navbar-default
 
     #cite-navbar-collapse.collapse.navbar-collapse
       ul.nav.navbar-nav
-        //
-          li style="margin-top:4px;"
-            select#region_selector.form-control
-              option value="http://cite.c.9rum.cc" Busan
-              option value="http://cite.d.9rum.cc" selected=selected Pangyo Dev
         li
           a href="http://tech.kakao.com/citedocs/" target="_blank" <i class="fa fa-book"></i> Document
         {{if $.githubRepo}}

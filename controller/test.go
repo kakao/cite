@@ -248,7 +248,7 @@ func GetBuildbot(c echo.Context) error {
 	}
 	bb := models.NewBuildBot()
 	log, err := bb.GetLogContent(
-		fmt.Sprintf("http://cite-build.s2.krane.9rum.cc/api/v2/logs/%s/contents", logID))
+		fmt.Sprintf(models.Conf.Buildbot.Host+"/api/v2/logs/%s/contents", logID))
 	if err != nil {
 		return err
 	}

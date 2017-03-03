@@ -24,6 +24,7 @@ type Config struct {
 		Host string
 	}
 	Buildbot struct {
+		Host    string
 		WebHook string
 	}
 	ElasticSearch struct {

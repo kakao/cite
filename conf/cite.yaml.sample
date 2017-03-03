@@ -8,6 +8,7 @@ Aggregator:
   Host: "[fluentd aggregator domain]"
 
 Buildbot:
+  Host: "[buildboot url]"
   Webhook: "[buildboot change_hook url]"
 
 LoadBalancer:
